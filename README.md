@@ -15,3 +15,8 @@ Run: `. venv/bin/activate` to activate the virtual environment
   - We should be able to easily add new features
 - Test everything 
   - Especially small specific functions (it will help with catching bugs!)
+
+
+### Running the tests 
+
+Run: `python -m pytest`
