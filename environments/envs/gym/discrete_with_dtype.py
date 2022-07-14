@@ -1,5 +1,6 @@
 from gym.spaces import Discrete
 
+# TODO: this could probably be moved to a utils file.
 
 class DiscreteWithDType(Discrete):
     def __init__(self, n, dtype):
