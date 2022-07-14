@@ -48,7 +48,7 @@ class Agent(object):
     def action_space(self):
         """Identify the dimensions and bounds of the action space.
 
-        MUST BE implemented in new environments.
+        MUST BE implemented in new social_dilemmas.
 
         Returns
         -------
@@ -61,7 +61,7 @@ class Agent(object):
     def observation_space(self):
         """Identify the dimensions and bounds of the observation space.
 
-        MUST BE implemented in new environments.
+        MUST BE implemented in new social_dilemmas.
 
         Returns
         -------
