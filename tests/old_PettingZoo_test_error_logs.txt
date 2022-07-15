@@ -1,0 +1,35 @@
+Here are the current warnings from running pytest. These should be straightforward enough to fix but might be somewhat
+time consuming so I will come back to them again later.
+
+I think it would be useful to go through the code and add type annotations to the parameters and return types.
+
+
+
+PS C:\Users\timf3\PycharmProjects\SSD2> python -m pytest
+================================================================================================================================================== test session starts ==================================================================================================================================================
+platform win32 -- Python 3.7.9, pytest-7.1.2, pluggy-1.0.0
+rootdir: C:\Users\timf3\PycharmProjects\SSD2
+collected 25 items
+
+tests\test_envs.py ......................                                                                                                                                                                                                                                                                          [ 88%]
+tests\test_rollout.py .                                                                                                                                                                                                                                                                                            [100%]
+
+=================================================================================================================================================== warnings summary ====================================================================================================================================================
+venv\lib\site-packages\gym\envs\registration.py:250
+  C:\Users\timf3\PycharmProjects\SSD2\venv\lib\site-packages\gym\envs\registration.py:250: DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.
+    for plugin in metadata.entry_points().get(entry_point, []):
+
+tests/test_pettingzoo.py::PettingZooTest::test_aec
+  C:\Users\timf3\PycharmProjects\SSD2\venv\lib\site-packages\pettingzoo\test\api_test.py:47: UserWarning: Observation is not NumPy array
+    warnings.warn("Observation is not NumPy array")
+
+tests/test_pettingzoo.py::PettingZooTest::test_aec
+  C:\Users\timf3\PycharmProjects\SSD2\venv\lib\site-packages\pettingzoo\test\api_test.py:57: UserWarning: Observation space for each agent probably should be gym.spaces.box or gym.spaces.discrete
+    warnings.warn("Observation space for each agent probably should be gym.spaces.box or gym.spaces.discrete")
+
+tests/test_pettingzoo.py::PettingZooTest::test_aec
+  C:\Users\timf3\PycharmProjects\SSD2\venv\lib\site-packages\pettingzoo\test\api_test.py:63: UserWarning: We recommend agents to be named in the format <descriptor>_<number>, like "player_0"
+    warnings.warn("We recommend agents to be named in the format <descriptor>_<number>, like \"player_0\"")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================================================================================================================================ 25 passed, 4 warnings in 22.37s ============================================================================================================================================
