@@ -21,6 +21,7 @@ class PettingZooTest(unittest.TestCase):
                 _ = env.reset()
         parallel_api_test(env, MAX_CYCLES)
 
+    # It seems that this only actually really gets used/ tested here! Its not used in the training scripts.
     def test_aec(self):
         env = aec_env(max_cycles=MAX_CYCLES, env="harvest", num_agents=2)
         env.seed(0)

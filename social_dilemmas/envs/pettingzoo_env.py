@@ -13,11 +13,12 @@ MAX_CYCLES = 1000
 def parallel_env(max_cycles=MAX_CYCLES, **ssd_args):
     return _parallel_env(max_cycles, **ssd_args)
 
-
+# Note that this doesn't seem to get used in the training script!
 def raw_env(max_cycles=MAX_CYCLES, **ssd_args):
     return from_parallel_wrapper(parallel_env(max_cycles, **ssd_args))
 
-
+# TODO: note that this is not used in the training script! I can probably remove it to clean up the code and any confusion
+#  I think this was also the bulk of the errors I was previously getting to when running pytests
 def env(max_cycles=MAX_CYCLES, **ssd_args):
     aec_env = raw_env(max_cycles, **ssd_args)
     aec_env = wrappers.AssertOutOfBoundsWrapper(aec_env)
