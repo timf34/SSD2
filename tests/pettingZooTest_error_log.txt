@@ -1,0 +1,78 @@
+Here are some of the errors I was getting before I downgraded PettingZoo to `1.13.1`
+
+Note that these are not super descriptive as I didn't log the errors as I went along and changed stuff so it would be
+best to just come back to this again.
+
+My sense is that the best way to fix this would be in my own code setup rather than digging into or changing anything
+in the `PettingZoo` library.
+
+
+PS C:\Users\timf3\PycharmProjects\SSD2> python -m pytest
+================================================================================================================================================== test session starts ==================================================================================================================================================
+platform win32 -- Python 3.7.9, pytest-7.1.2, pluggy-1.0.0
+rootdir: C:\Users\timf3\PycharmProjects\SSD2
+collected 25 items
+
+tests\test_envs.py ......................                                                                                                                                                                                                                                                                          [ 88%]
+tests\test_pettingzoo.py .F                                                                                                                                                                                                                                                                                        [ 96%]
+tests\test_rollout.py .                                                                                                                                                                                                                                                                                            [100%]
+
+======================================================================================================================================================= FAILURES ========================================================================================================================================================
+_____________________________________________________________________________________________________________________________________________ PettingZooTest.test_parallel ______________________________________________________________________________________________________________________________________________
+
+self = <tests.test_pettingzoo.PettingZooTest testMethod=test_parallel>
+
+    def test_parallel(self):
+        env = parallel_env(max_cycles=MAX_CYCLES, env="harvest", num_agents=2)
+        env.seed()
+        env.reset()
+        n_act = env.action_space("agent-0").n
+        for _ in range(MAX_CYCLES * env.num_agents):
+            actions = {agent: np.random.randint(n_act) for agent in env.agents}
+            _, _, _, _ = env.step(actions)
+            if not env.agents:
+                _ = env.reset()
+>       parallel_api_test(env, MAX_CYCLES)
+
+tests\test_pettingzoo.py:22:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+par_env = <social_dilemmas.envs.pettingzoo_env._parallel_env object at 0x000001E0D0C4F5C8>, num_cycles = 1000
+
+    def parallel_api_test(par_env, num_cycles=1000):
+        par_env.max_cycles = num_cycles
+
+        if not hasattr(par_env, "possible_agents"):
+            warnings.warn(missing_attr_warning.format(name="possible_agents"))
+
+        assert not isinstance(par_env.unwrapped, aec_to_parallel_wrapper)
+        assert not isinstance(par_env.unwrapped, parallel_to_aec_wrapper)
+        assert not isinstance(par_env.unwrapped, turn_based_aec_to_parallel_wrapper)
+        assert not isinstance(par_env.unwrapped, BaseWrapper)
+
+        # checks that reset takes arguments seed and options
+>       par_env.reset(seed=0, options={"options": 1})
+E       TypeError: reset() got an unexpected keyword argument 'seed'
+
+venv\lib\site-packages\pettingzoo\test\parallel_test.py:38: TypeError
+=================================================================================================================================================== warnings summary ====================================================================================================================================================
+venv\lib\site-packages\gym\envs\registration.py:250
+  C:\Users\timf3\PycharmProjects\SSD2\venv\lib\site-packages\gym\envs\registration.py:250: DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.
+    for plugin in metadata.entry_points().get(entry_point, []):
+
+tests/test_pettingzoo.py::PettingZooTest::test_aec
+  C:\Users\timf3\PycharmProjects\SSD2\venv\lib\site-packages\pettingzoo\test\api_test.py:60: UserWarning: Observation is not NumPy array
+    warnings.warn("Observation is not NumPy array")
+
+tests/test_pettingzoo.py::PettingZooTest::test_aec
+  C:\Users\timf3\PycharmProjects\SSD2\venv\lib\site-packages\pettingzoo\test\api_test.py:82: UserWarning: Observation space for each agent probably should be gym.spaces.box or gym.spaces.discrete
+    "Observation space for each agent probably should be gym.spaces.box or gym.spaces.discrete"
+
+tests/test_pettingzoo.py::PettingZooTest::test_aec
+  C:\Users\timf3\PycharmProjects\SSD2\venv\lib\site-packages\pettingzoo\test\api_test.py:99: UserWarning: We recommend agents to be named in the format <descriptor>_<number>, like "player_0"
+    'We recommend agents to be named in the format <descriptor>_<number>, like "player_0"'
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================================================================================================================================ short test summary info ================================================================================================================================================
+FAILED tests/test_pettingzoo.py::PettingZooTest::test_parallel - TypeError: reset() got an unexpected keyword argument 'seed'
+======================================================================================================================================= 1 failed, 24 passed, 4 warnings in 17.06s =======================================================================================================================================
