@@ -2,7 +2,7 @@ from functools import lru_cache
 
 from gym.utils import EzPickle
 from pettingzoo.utils import wrappers
-from pettingzoo.utils.conversions import from_parallel_wrapper
+from pettingzoo.utils.conversions import parallel_to_aec_wrapper
 from pettingzoo.utils.env import ParallelEnv
 
 from social_dilemmas.envs.env_creator import get_env_creator
@@ -15,7 +15,7 @@ def parallel_env(max_cycles=MAX_CYCLES, **ssd_args):
 
 # Note that this doesn't seem to get used in the training script!
 def raw_env(max_cycles=MAX_CYCLES, **ssd_args):
-    return from_parallel_wrapper(parallel_env(max_cycles, **ssd_args))
+    return parallel_to_aec_wrapper(parallel_env(max_cycles, **ssd_args))
 
 # TODO: note that this is not used in the training script! I can probably remove it to clean up the code and any confusion
 #  I think this was also the bulk of the errors I was previously getting to when running pytests
@@ -26,6 +26,7 @@ def env(max_cycles=MAX_CYCLES, **ssd_args):
     return aec_env
 
 
+# TODO: Following PEP, this should be in camelCase
 class ssd_parallel_env(ParallelEnv):
     def __init__(self, env, max_cycles):
         self.ssd_env = env
@@ -37,14 +38,12 @@ class ssd_parallel_env(ParallelEnv):
         self.action_space = lru_cache(maxsize=None)(lambda agent_id: env.action_space)
         self.action_spaces = {agent: env.action_space for agent in self.possible_agents}
 
-    def reset(self):
+    def reset(self, seed=None):
         self.agents = self.possible_agents[:]
         self.num_cycles = 0
         self.dones = {agent: False for agent in self.agents}
-        return self.ssd_env.reset()
+        return self.ssd_env.reset(seed)
 
-    def seed(self, seed=None):
-        return self.ssd_env.seed(seed)
 
     def render(self, mode="human"):
         return self.ssd_env.render(mode=mode)
