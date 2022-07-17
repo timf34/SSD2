@@ -11,7 +11,6 @@ from social_dilemmas.envs.pettingzoo_env import parallel_env
 class PettingZooTest(unittest.TestCase):
     def test_parallel(self):
         env = parallel_env(max_cycles=MAX_CYCLES, env="harvest", num_agents=2)
-        env.seed()
         env.reset()
         n_act = env.action_space("agent-0").n
         for _ in range(MAX_CYCLES * env.num_agents):
@@ -24,7 +23,6 @@ class PettingZooTest(unittest.TestCase):
     # It seems that this only actually really gets used/ tested here! Its not used in the training scripts.
     def test_aec(self):
         env = aec_env(max_cycles=MAX_CYCLES, env="harvest", num_agents=2)
-        env.seed(0)
         env.reset()
         n_act = env.action_space("agent-0").n
         for agent in env.agent_iter(max_iter=MAX_CYCLES * env.num_agents):

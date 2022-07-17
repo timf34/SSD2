@@ -44,7 +44,6 @@ class ssd_parallel_env(ParallelEnv):
         self.dones = {agent: False for agent in self.agents}
         return self.ssd_env.reset(seed)
 
-
     def render(self, mode="human"):
         return self.ssd_env.render(mode=mode)
 

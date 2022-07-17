@@ -349,8 +349,6 @@ class MapEnv(MultiAgentEnv):
                 observations[agent.agent_id] = {"curr_obs": rgb_arr}
         return observations
 
-    def seed(self, seed=None):
-        np.random.seed(seed)
 
     def close(self):
         plt.close()
