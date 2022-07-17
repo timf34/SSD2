@@ -22,6 +22,9 @@ libraries (the `requirements.txt` file went from 19 to 51 lines after pip instal
 **Passing the pettingZoo tests**
 
 - Changed `aec_to_parallel_wrapper` to `aec_to_parallel_wrapper` (I mixed them up the first time!)
-  - Note that I changed from `from_parallel_wrapper` to these yesterday as that function is now deprecated. 
+  - Note that I changed from `from_parallel_wrapper` to these yesterday as that function is now deprecated.
 
-- 
+
+**Integrating SB3**
+
+- Note to not specify a specific version for `gym` or `supersuit`in the `requirements.txt` file to avoid conflicts.  
