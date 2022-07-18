@@ -1,3 +1,13 @@
+### Setup
+
+At the moment, things will only work using WSL2 as Ubuntu seems to allow me to installing packages that conflict and 
+don't work in Windows. I was lead to do this as thankfully one of the developers published there setup on a GitHub 
+issue (here)[https://github.com/Farama-Foundation/PettingZoo/issues/710#issuecomment-1141321736]. 
+
+I still need to install `torch` properly into the venv (from source so it works with cuda), but for the moment, it is 
+installed properly in my base WSL2 so I will just work ahead with that for now 
+
+
 ### Removing `Ray`
 
 At the moment, the base environment class inherits from Ray's `MultiAgentEnv` class, but I think it would be a lot 
