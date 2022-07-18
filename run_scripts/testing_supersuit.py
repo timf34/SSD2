@@ -5,6 +5,8 @@ from stable_baselines3 import PPO
 from pettingzoo.butterfly import pistonball_v6
 import supersuit as ss
 
+# This is just a simple basic file to help ensure whether pettingzoo + supersuit + sb3 is working
+
 
 if __name__ == "__main__":
 
