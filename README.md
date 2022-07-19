@@ -1,5 +1,5 @@
 # SSD2
-Re-implementing Eugene's codebase with PettingZoo and SB3 
+Re-implementing Eugene's codebase with PettingZoo and SB3.
 
 
 ### Setting up the `venv`
