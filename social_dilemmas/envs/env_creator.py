@@ -45,3 +45,17 @@ def get_env_creator(
         raise ValueError(f"env must be one of harvest, cleanup, switch, not {env}")
 
     return env_creator
+
+
+def test_env_creator():
+    env_names = ["harvest"]
+    for env_name in env_names:
+        env = get_env_creator(env_name, num_agents=5)
+        x = env(None)
+        print("x.agents: ", x.agents)
+        assert len(x.agents) == 5 and len(x.agents.keys()) == 5
+        assert 'agent-0' in x.agents.keys()
+
+
+if __name__ == "__main__":
+    test_env_creator()
