@@ -19,4 +19,6 @@ pip install -r wsl_requirements.txt
 # Individually install certain things
 pip install stable-baselines3==1.5.0
 pip install supersuit==3.5.0
+pip install tensorboard
+pip install opencv-python
 pip install gym==0.24.0
