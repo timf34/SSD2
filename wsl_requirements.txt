@@ -2,7 +2,7 @@ cffi==1.15.0
 cloudpickle==2.1.0
 cycler==0.11.0
 fonttools==4.33.3
-gym==0.24.0
+gym==0.24.0  # Conflict errors might be raised here; just try to install it (I might get around to fixing things to work with gym==0.21.0 but that won't be today)
 gym-notices==0.0.6
 importlib-metadata==4.11.4
 kiwisolver==1.4.2
