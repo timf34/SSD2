@@ -7,6 +7,8 @@ from gym.spaces import Box, Dict
 # from ray.rllib.agents.callbacks import DefaultCallbacks
 # from ray.rllib.env import MultiAgentEnv
 from pettingzoo import ParallelEnv
+from stable_baselines3.common import callbacks
+
 
 _MAP_ENV_ACTIONS = {
     "MOVE_LEFT": [0, -1],  # Move left
@@ -928,4 +930,4 @@ class MapEnv(ParallelEnv):
 
     @staticmethod
     def get_environment_callbacks():
-        return DefaultCallbacks
+        return callbacks.BaseCallback
