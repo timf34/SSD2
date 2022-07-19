@@ -8,6 +8,7 @@ importlib-metadata==4.11.4
 kiwisolver==1.4.2
 matplotlib==3.5.2
 numpy==1.22.4
+opencv-python
 packaging==21.3
 pandas==1.4.2
 pettingzoo==1.19.0
@@ -21,6 +22,7 @@ pytz==2022.1
 six==1.16.0
 stable-baselines3==1.5.0
 supersuit==3.5.0
+tensorboard
 tinyscaler==1.2.4
 torch==1.11.0
 typing-extensions==4.2.0
