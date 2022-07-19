@@ -27,6 +27,20 @@ libraries (the `requirements.txt` file went from 19 to 51 lines after pip instal
 
 ## Log 
 
+### 19/07/22 
+
+- Merged `updating_to_new_pettingzoo` into main and archived/ deleted it.
+  - Link here: https://stackoverflow.com/questions/1307114/how-can-i-archive-git-branches
+
+### 18/07/22
+
+**Environments now inherit from PettingZoo and work**
+
+- Dependency conflicts will work on WSL2
+- I updated the environments to now be compatible with PettingZoo's ParallelEnv insteaf of Rays MultiAgentEnv.
+  - Changed `self.num_agents` to `self._num_agents` to avoid base method conflict 
+  - Added `self.start` attribute to `class DiscreteWithDType`
+
 ### 15/07/22
 
 **Passing the pettingZoo tests**
