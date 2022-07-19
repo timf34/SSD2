@@ -38,10 +38,26 @@ class ssd_parallel_env(ParallelEnv):
         self.action_space = lru_cache(maxsize=None)(lambda agent_id: env.action_space)
         self.action_spaces = {agent: env.action_space for agent in self.possible_agents}
 
-    def reset(self, seed=None):
+    def reset(self, seed=None, options=None):
+        """
+        From `gym`: https://github.com/openai/gym/blob/8e812e1de501ae359f16ce5bcd9a6f40048b342f/gym/core.py#L169
+        Args:
+            seed (optional int): The seed that is used to initialize the environment's PRNG.
+                If the environment does not already have a PRNG and ``seed=None`` (the default option) is passed,
+                a seed will be chosen from some source of entropy (e.g. timestamp or /dev/urandom).
+                However, if the environment already has a PRNG and ``seed=None`` is passed, the PRNG will *not* be reset.
+                If you pass an integer, the PRNG will be reset even if it already exists.
+                Usually, you want to pass an integer *right after the environment has been initialized and then never again*.
+                Please refer to the minimal example above to see this paradigm in action.
+            options (optional dict): Additional information to specify how the environment is reset (optional,
+                depending on the specific environment)
+        """
         self.agents = self.possible_agents[:]
         self.num_cycles = 0
         self.dones = {agent: False for agent in self.agents}
+        return self.ssd_env.reset(seed)
+
+    def seed(self, seed=None):
         return self.ssd_env.reset(seed)
 
     def render(self, mode="human"):
@@ -58,6 +74,10 @@ class ssd_parallel_env(ParallelEnv):
             self.dones = {agent: True for agent in self.agents}
         self.agents = [agent for agent in self.agents if not self.dones[agent]]
         return obss, rews, self.dones, infos
+
+    def __str__(self):
+        print("Printing methods for env:", env)
+        print(self.__dict__)
 
 
 class _parallel_env(ssd_parallel_env, EzPickle):
