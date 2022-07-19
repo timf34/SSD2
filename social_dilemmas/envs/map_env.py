@@ -4,8 +4,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from gym.spaces import Box, Dict
-from ray.rllib.agents.callbacks import DefaultCallbacks
-from ray.rllib.env import MultiAgentEnv
+# from ray.rllib.agents.callbacks import DefaultCallbacks
+# from ray.rllib.env import MultiAgentEnv
+from pettingzoo import ParallelEnv
 
 _MAP_ENV_ACTIONS = {
     "MOVE_LEFT": [0, -1],  # Move left
@@ -56,7 +57,7 @@ DEFAULT_COLOURS = {
 #         |
 
 
-class MapEnv(MultiAgentEnv):
+class MapEnv(ParallelEnv):
     def __init__(
         self,
         ascii_map,
@@ -86,7 +87,11 @@ class MapEnv(MultiAgentEnv):
         return_agent_actions: bool
             If true, the observation space will include the actions of other agents
         """
-        self.num_agents = num_agents
+
+        # Petting Zoo specific stuff
+        # ParallelEnv has a base method `def num_agents()` so we will change the name of this attribute here
+        self._num_agents = num_agents
+
         self.base_map = self.ascii_to_numpy(ascii_map)
         self.view_len = view_len
         self.map_padding = view_len
@@ -143,19 +148,19 @@ class MapEnv(MultiAgentEnv):
                 "other_agent_actions": Box(
                     low=0,
                     high=len(self.all_actions),
-                    shape=(self.num_agents - 1,),
+                    shape=(self._num_agents - 1,),
                     dtype=np.uint8,
                 ),
                 "visible_agents": Box(
                     low=0,
                     high=1,
-                    shape=(self.num_agents - 1,),
+                    shape=(self._num_agents - 1,),
                     dtype=np.uint8,
                 ),
                 "prev_visible_agents": Box(
                     low=0,
                     high=1,
-                    shape=(self.num_agents - 1,),
+                    shape=(self._num_agents - 1,),
                     dtype=np.uint8,
                 ),
             }
@@ -294,13 +299,13 @@ class MapEnv(MultiAgentEnv):
             for agent in rewards.keys():
                 rewards[agent] = collective_reward
         if self.inequity_averse_reward:
-            assert self.num_agents > 1, "Cannot use inequity aversion with only one agent!"
+            assert self._num_agents > 1, "Cannot use inequity aversion with only one agent!"
             temp_rewards = rewards.copy()
             for agent in rewards.keys():
                 diff = np.array([r - rewards[agent] for r in rewards.values()])
                 dis_inequity = self.alpha * sum(diff[diff > 0])
                 adv_inequity = self.beta * sum(diff[diff < 0])
-                temp_rewards[agent] -= (dis_inequity + adv_inequity) / (self.num_agents - 1)
+                temp_rewards[agent] -= (dis_inequity + adv_inequity) / (self._num_agents - 1)
             rewards = temp_rewards
 
         dones["__all__"] = np.any(list(dones.values()))
@@ -336,7 +341,7 @@ class MapEnv(MultiAgentEnv):
             # concatenate on the prev_actions to the observations
             if self.return_agent_actions:
                 # No previous actions so just pass in "wait" action
-                prev_actions = np.array([4 for _ in range(self.num_agents - 1)]).astype(np.uint8)
+                prev_actions = np.array([4 for _ in range(self._num_agents - 1)]).astype(np.uint8)
                 visible_agents = self.find_visible_agents(agent.agent_id)
                 observations[agent.agent_id] = {
                     "curr_obs": rgb_arr,
@@ -387,7 +392,7 @@ class MapEnv(MultiAgentEnv):
         count_dict = dict(zip(unique, counts))
 
         # check for multiple agents
-        for i in range(self.num_agents):
+        for i in range(self._num_agents):
             if count_dict[chr(i + 1)] != 1:
                 print("Error! Wrong number of agent", i, "in map!")
                 return False
@@ -919,6 +924,7 @@ class MapEnv(MultiAgentEnv):
             ],
             dtype=np.uint8,
         )
+
 
     @staticmethod
     def get_environment_callbacks():
