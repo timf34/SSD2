@@ -1,7 +1,8 @@
 import math
 
 import numpy as np
-from ray.rllib.agents.callbacks import DefaultCallbacks
+# from ray.rllib.agents.callbacks import DefaultCallbacks
+from stable_baselines3.common import callbacks
 
 from social_dilemmas.envs.agent import SwitchAgent
 from social_dilemmas.envs.gym.discrete_with_dtype import DiscreteWithDType
@@ -101,7 +102,7 @@ class SwitchEnv(MapEnv):
     def setup_agents(self):
         map_with_agents = self.get_map_with_agents()
 
-        for i in range(self.num_agents):
+        for i in range(self._num_agents):
             agent_id = "agent-" + str(i)
             spawn_point = self.spawn_point()
             rotation = self.spawn_rotation()
@@ -193,7 +194,7 @@ class SwitchEnv(MapEnv):
 
     @staticmethod
     def get_environment_callbacks():
-        class SwitchCallback(DefaultCallbacks):
+        class SwitchCallback(callbacks.BaseCallback):
             def on_episode_end(self, info):
                 super().on_episode_end(info)
                 SwitchEnv.on_episode_end(info)

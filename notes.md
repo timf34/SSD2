@@ -1,3 +1,13 @@
+### Setup
+
+At the moment, things will only work using WSL2 as Ubuntu seems to allow me to installing packages that conflict and 
+don't work in Windows. I was lead to do this as thankfully one of the developers published there setup on a GitHub 
+issue (here)[https://github.com/Farama-Foundation/PettingZoo/issues/710#issuecomment-1141321736]. 
+
+I still need to install `torch` properly into the venv (from source so it works with cuda), but for the moment, it is 
+installed properly in my base WSL2 so I will just work ahead with that for now 
+
+
 ### Removing `Ray`
 
 At the moment, the base environment class inherits from Ray's `MultiAgentEnv` class, but I think it would be a lot 
@@ -22,6 +32,9 @@ libraries (the `requirements.txt` file went from 19 to 51 lines after pip instal
 **Passing the pettingZoo tests**
 
 - Changed `aec_to_parallel_wrapper` to `aec_to_parallel_wrapper` (I mixed them up the first time!)
-  - Note that I changed from `from_parallel_wrapper` to these yesterday as that function is now deprecated. 
+  - Note that I changed from `from_parallel_wrapper` to these yesterday as that function is now deprecated.
 
-- 
+
+**Integrating SB3**
+
+- Note to not specify a specific version for `gym` or `supersuit`in the `requirements.txt` file to avoid conflicts.  

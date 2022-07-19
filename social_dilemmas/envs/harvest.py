@@ -31,7 +31,7 @@ class HarvestEnv(MapEnv):
             ascii_map,
             _HARVEST_ACTIONS,
             HARVEST_VIEW_SIZE,
-            num_agents,
+            num_agents=num_agents,
             return_agent_actions=return_agent_actions,
             use_collective_reward=use_collective_reward,
             inequity_averse_reward=inequity_averse_reward,
@@ -46,13 +46,13 @@ class HarvestEnv(MapEnv):
 
     @property
     def action_space(self):
-        return DiscreteWithDType(8, dtype=np.uint8)
+        return DiscreteWithDType(8, dtype=np.int8)
 
     def setup_agents(self):
         map_with_agents = self.get_map_with_agents()
 
-        for i in range(self.num_agents):
-            agent_id = "agent-" + str(i)
+        for i in range(self._num_agents):
+            agent_id = f"agent-{str(i)}"
             spawn_point = self.spawn_point()
             rotation = self.spawn_rotation()
             grid = map_with_agents
@@ -66,13 +66,10 @@ class HarvestEnv(MapEnv):
 
     def custom_action(self, agent, action):
         agent.fire_beam(b"F")
-        updates = self.update_map_fire(
-            agent.pos.tolist(),
-            agent.get_orientation(),
-            self.all_actions["FIRE"],
-            fire_char=b"F",
-        )
-        return updates
+        return self.update_map_fire(agent.pos.tolist(),
+                                    agent.get_orientation(),
+                                    self.all_actions["FIRE"],
+                                    fire_char=b"F",)
 
     def custom_map_update(self):
         """See parent class"""
@@ -122,3 +119,6 @@ class HarvestEnv(MapEnv):
         counts_dict = dict(zip(unique, counts))
         num_apples = counts_dict.get(b"A", 0)
         return num_apples
+
+    def print(self):
+        print(self.__dict__)
