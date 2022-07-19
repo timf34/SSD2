@@ -24,4 +24,5 @@ supersuit==3.5.0
 tinyscaler==1.2.4
 torch==1.11.0
 typing-extensions==4.2.0
+wandb
 zipp==3.8.0
