@@ -148,12 +148,17 @@ def main(args):
         alpha=alpha,
         beta=beta,
     )
+    print("1. Env type is: ", type(env))
     env = ss.observation_lambda_v0(env, lambda x, _: x["curr_obs"], lambda s: s["curr_obs"])
+    print("2. Env type is: ", type(env))
     env = ss.frame_stack_v1(env, num_frames)
+    print("3. Env type is: ", type(env))
     env = ss.pettingzoo_env_to_vec_env_v1(env)
+    print("4. Env type is: ", type(env))
     env = ss.concat_vec_envs_v1(
         env, num_vec_envs=num_envs, num_cpus=num_cpus, base_class="stable_baselines3"
     )
+    print("We made it")
     env = VecMonitor(env)
 
     policy_kwargs = dict(
