@@ -27,6 +27,17 @@ libraries (the `requirements.txt` file went from 19 to 51 lines after pip instal
 
 ## Log 
 
+### 20/7/22
+
+**Integrated proper wandb logging; installed torch with cuda on WSL2.**
+
+- Cleaned up `sb3_train.py`
+  - Made a new config dataclass 
+- Installed torch with cuda
+  - This was a hassle on WSL2, and I don't think the right version is installed but it runs
+  - I will need to check if this does cause issues though 
+- Added wandb logging 
+
 ### 19/07/22 
 
 **Integrating wandb;**
