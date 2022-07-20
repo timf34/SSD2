@@ -1,0 +1,135 @@
+This is the output from running `sb3_train.py` for about 90 mins
+
+C:\Windows\system32\wsl.exe --distribution Ubuntu-20.04 --exec /bin/sh -c "export PYCHARM_DISPLAY_PORT=63342 && export PYTHONPATH='/mnt/c/Users/timf3/PycharmProjects/SSD2:/mnt/c/Program Files/JetBrains/PyCharm 2021.2/plugins/python/helpers/pycharm_matplotlib_backend:/mnt/c/Program Files/JetBrains/PyCharm 2021.2/plugins/python/helpers/pycharm_display' && export PYTHONUNBUFFERED=1 && export PYTHONIOENCODING=UTF-8 && export PYCHARM_HOSTED=1 && cd /mnt/c/Users/timf3/PycharmProjects/SSD2 && /usr/bin/python3 /mnt/c/Users/timf3/PycharmProjects/SSD2/sb3_train.py"
+wandb: Currently logged in as: timf34. Use `wandb login --relogin` to force relogin
+wandb: Appending key for api.wandb.ai to your netrc file: /home/timf34/.netrc
+wandb: wandb version 0.12.21 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.12.19
+wandb: Run data is saved locally in /mnt/c/Users/timf3/PycharmProjects/SSD2/wandb/run-20220720_162953-36ybfs7i
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run deep-pyramid-1
+wandb: ⭐️ View project at https://wandb.ai/timf34/sb3_train
+wandb: 🚀 View run at https://wandb.ai/timf34/sb3_train/runs/36ybfs7i
+1. Env type is:  <class 'social_dilemmas.envs.pettingzoo_env._parallel_env'>
+2. Env type is:  <class 'pettingzoo.utils.conversions.aec_to_parallel_wrapper'>
+3. Env type is:  <class 'supersuit.generic_wrappers.utils.shared_wrapper_util.shared_wrapper_parr'>
+4. Env type is:  <class 'supersuit.vector.markov_vector_wrapper.MarkovVectorEnv'>
+We made it
+Using cpu device
+Logging to ./results/sb3/cleanup_ppo_paramsharing/PPO_5
+---------------------------------
+| rollout/           |          |
+|    ep_len_mean     | 1e+03    |
+|    ep_rew_mean     | -614.85  |
+| time/              |          |
+|    fps             | 1201     |
+|    iterations      | 1        |
+|    time_elapsed    | 49       |
+|    total_timesteps | 60000    |
+---------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 1e+03       |
+|    ep_rew_mean          | -633.17     |
+| time/                   |             |
+|    fps                  | 67          |
+|    iterations           | 2           |
+|    time_elapsed         | 1779        |
+|    total_timesteps      | 120000      |
+| train/                  |             |
+|    approx_kl            | 0.013389255 |
+|    clip_fraction        | 0.0167      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -2.07       |
+|    explained_variance   | -0.00024    |
+|    learning_rate        | 0.0001      |
+|    loss                 | 2.98e+03    |
+|    n_updates            | 30          |
+|    policy_gradient_loss | -0.00123    |
+|    value_loss           | 6.3e+03     |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 1e+03       |
+|    ep_rew_mean          | -576.8      |
+| time/                   |             |
+|    fps                  | 60          |
+|    iterations           | 3           |
+|    time_elapsed         | 2995        |
+|    total_timesteps      | 180000      |
+| train/                  |             |
+|    approx_kl            | 0.012163149 |
+|    clip_fraction        | 0.0172      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -2.05       |
+|    explained_variance   | -7.75e-06   |
+|    learning_rate        | 0.0001      |
+|    loss                 | 3.06e+03    |
+|    n_updates            | 60          |
+|    policy_gradient_loss | -0.00121    |
+|    value_loss           | 6.07e+03    |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 1e+03       |
+|    ep_rew_mean          | -552.94     |
+| time/                   |             |
+|    fps                  | 56          |
+|    iterations           | 4           |
+|    time_elapsed         | 4212        |
+|    total_timesteps      | 240000      |
+| train/                  |             |
+|    approx_kl            | 0.011313753 |
+|    clip_fraction        | 0.0187      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -2.03       |
+|    explained_variance   | -1.31e-06   |
+|    learning_rate        | 0.0001      |
+|    loss                 | 2.11e+03    |
+|    n_updates            | 90          |
+|    policy_gradient_loss | -0.00136    |
+|    value_loss           | 4.21e+03    |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 1e+03       |
+|    ep_rew_mean          | -552.73     |
+| time/                   |             |
+|    fps                  | 55          |
+|    iterations           | 5           |
+|    time_elapsed         | 5406        |
+|    total_timesteps      | 300000      |
+| train/                  |             |
+|    approx_kl            | 0.011406789 |
+|    clip_fraction        | 0.00682     |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -2.02       |
+|    explained_variance   | -5.96e-07   |
+|    learning_rate        | 0.0001      |
+|    loss                 | 1.88e+03    |
+|    n_updates            | 120         |
+|    policy_gradient_loss | -0.000468   |
+|    value_loss           | 4.04e+03    |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 1e+03       |
+|    ep_rew_mean          | -473.84     |
+| time/                   |             |
+|    fps                  | 54          |
+|    iterations           | 6           |
+|    time_elapsed         | 6603        |
+|    total_timesteps      | 360000      |
+| train/                  |             |
+|    approx_kl            | 0.013229368 |
+|    clip_fraction        | 0.0225      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -2          |
+|    explained_variance   | -3.7e-06    |
+|    learning_rate        | 0.0001      |
+|    loss                 | 1.92e+03    |
+|    n_updates            | 150         |
+|    policy_gradient_loss | -0.00171    |
+|    value_loss           | 4.32e+03    |
+-----------------------------------------

@@ -1,0 +1,80 @@
+This is my first run using cuda 20/7/22
+
+I don't think the installed cuda is the right version
+
+I am also getting some weird errors although it does indeed run.
+
+
+C:\Windows\system32\wsl.exe --distribution Ubuntu-20.04 --exec /bin/sh -c "export PYCHARM_DISPLAY_PORT=63342 && export PYTHONPATH='/mnt/c/Users/timf3/PycharmProjects/SSD2:/mnt/c/Program Files/JetBrains/PyCharm 2021.2/plugins/python/helpers/pycharm_matplotlib_backend:/mnt/c/Program Files/JetBrains/PyCharm 2021.2/plugins/python/helpers/pycharm_display' && export PYTHONUNBUFFERED=1 && export PYTHONIOENCODING=UTF-8 && export PYCHARM_HOSTED=1 && cd /mnt/c/Users/timf3/PycharmProjects/SSD2 && /usr/bin/python3 /mnt/c/Users/timf3/PycharmProjects/SSD2/sb3_train.py"
+Available device is:  cuda
+wandb: Currently logged in as: timf34. Use `wandb login --relogin` to force relogin
+wandb: Appending key for api.wandb.ai to your netrc file: /home/timf34/.netrc
+wandb: wandb version 0.12.21 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.12.19
+wandb: Run data is saved locally in /mnt/c/Users/timf3/PycharmProjects/SSD2/wandb/run-20220720_223511-2yeml5h1
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run PPO_20_07_2022_223511
+wandb: ⭐️ View project at https://wandb.ai/timf34/sb3_train
+wandb: 🚀 View run at https://wandb.ai/timf34/sb3_train/runs/2yeml5h1
+1. Env type is:  <class 'social_dilemmas.envs.pettingzoo_env._parallel_env'>
+2. Env type is:  <class 'pettingzoo.utils.conversions.aec_to_parallel_wrapper'>
+3. Env type is:  <class 'supersuit.generic_wrappers.utils.shared_wrapper_util.shared_wrapper_parr'>
+4. Env type is:  <class 'supersuit.vector.markov_vector_wrapper.MarkovVectorEnv'>
+We made it
+Using cuda device
+Logging to ./results/sb3/cleanup_ppo_paramsharing/PPO_7
+---------------------------------
+| rollout/           |          |
+|    ep_len_mean     | 1e+03    |
+|    ep_rew_mean     | -826.75  |
+| time/              |          |
+|    fps             | 1391     |
+|    iterations      | 1        |
+|    time_elapsed    | 43       |
+|    total_timesteps | 60000    |
+---------------------------------
+Early stopping at step 4 due to reaching max kl: 0.02
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 1e+03       |
+|    ep_rew_mean          | -699.92     |
+| time/                   |             |
+|    fps                  | 892         |
+|    iterations           | 2           |
+|    time_elapsed         | 134         |
+|    total_timesteps      | 120000      |
+| train/                  |             |
+|    approx_kl            | 0.014021057 |
+|    clip_fraction        | 0.00994     |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -2.07       |
+|    explained_variance   | -1.07e-06   |
+|    learning_rate        | 0.0001      |
+|    loss                 | 4.93e+03    |
+|    n_updates            | 30          |
+|    policy_gradient_loss | -0.00143    |
+|    value_loss           | 9.97e+03    |
+-----------------------------------------
+Early stopping at step 15 due to reaching max kl: 0.02
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 1e+03       |
+|    ep_rew_mean          | -667.77     |
+| time/                   |             |
+|    fps                  | 368         |
+|    iterations           | 3           |
+|    time_elapsed         | 488         |
+|    total_timesteps      | 180000      |
+| train/                  |             |
+|    approx_kl            | 0.014574604 |
+|    clip_fraction        | 0.011       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -2.05       |
+|    explained_variance   | -9.18e-06   |
+|    learning_rate        | 0.0001      |
+|    loss                 | 2.48e+03    |
+|    n_updates            | 60          |
+|    policy_gradient_loss | -0.000914   |
+|    value_loss           | 4.91e+03    |
+-----------------------------------------
