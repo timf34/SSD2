@@ -17,10 +17,9 @@ wandb.login(key=WANDB_API_KEY)
 # This is just a simple basic file to help ensure whether pettingzoo + supersuit + sb3 is working
 
 
-
 config = {
-    "total_timesteps": 5120
-   , "env_name": "pistonball_v6"
+    "total_timesteps": 5120,
+    "env_name": "pistonball_v6"
 }
 
 # Experiment name is time and date
