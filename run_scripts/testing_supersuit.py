@@ -11,8 +11,8 @@ import wandb
 from wandb.integration.sb3 import WandbCallback
 
 
-# WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
-# wandb.login(key=WANDB_API_KEY)
+WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
+wandb.login(key=WANDB_API_KEY)
 
 # This is just a simple basic file to help ensure whether pettingzoo + supersuit + sb3 is working
 
@@ -25,12 +25,12 @@ config = {
 
 experiment_name = f"PPO_{int(time.time())}"
 
-# wandb.init(
-#     project="sb3-testing",
-#     config=config,
-#     sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
-#     save_code=True
-# )
+wandb.init(
+    project="sb3-testing",
+    config=config,
+    sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
+    save_code=True
+)
 
 env = pistonball_v6.parallel_env()
 # env = Monitor(env)
@@ -50,12 +50,12 @@ model = PPO('CnnPolicy', env, verbose=3, n_steps=16, tensorboard_log=f"runs/{exp
 print("We made it")
 model.learn(
     total_timesteps=config["total_timesteps"],
-    # callback=WandbCallback(
-    #     gradient_save_freq=100,
-    #     model_save_freq=100,
-    #     model_save_path=f"models/{experiment_name}",
-    #     verbose=2
-    #     )
+    callback=WandbCallback(
+        gradient_save_freq=100,
+        model_save_freq=100,
+        model_save_path=f"models/{experiment_name}",
+        verbose=2
+        )
 )
 print("We made it here")
 print("Why is this code not finishing exectuion")
