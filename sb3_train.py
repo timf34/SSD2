@@ -23,63 +23,6 @@ WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
 wandb.login(key=WANDB_API_KEY)
 EXPERIMENT_NAME = f"PPO_{time.strftime('%d_%m_%Y_%H%M%S')}"
 
-
-def parse_args():
-    parser = argparse.ArgumentParser("Stable-Baselines3 PPO with Parameter Sharing")
-    parser.add_argument(
-        "--env-name",
-        type=str,
-        default="harvest",
-        choices=["harvest", "cleanup"],
-        help="The SSD environment to use",
-    )
-    parser.add_argument(
-        "--num-agents",
-        type=int,
-        default=5,
-        help="The number of agents",
-    )
-    parser.add_argument(
-        "--rollout-len",
-        type=int,
-        default=1000,
-        help="length of training rollouts AND length at which env is reset",
-    )
-    parser.add_argument(
-        "--total-timesteps",
-        type=int,
-        default=5e8,
-        help="Number of environment timesteps",
-    )
-    parser.add_argument(
-        "--use-collective-reward",
-        type=bool,
-        default=False,
-        help="Give each agent the collective reward across all agents",
-    )
-    parser.add_argument(
-        "--inequity-averse-reward",
-        type=bool,
-        default=False,
-        help="Use inequity averse rewards from 'Inequity aversion \
-            improves cooperation in intertemporal social dilemmas'",
-    )
-    parser.add_argument(
-        "--alpha",
-        type=float,
-        default=5,
-        help="Advantageous inequity aversion factor",
-    )
-    parser.add_argument(
-        "--beta",
-        type=float,
-        default=0.05,
-        help="Disadvantageous inequity aversion factor",
-    )
-    args = parser.parse_args()
-    return args
-
-
 # Use this with lambda wrapper returning observations only
 class CustomCNN(BaseFeaturesExtractor):
     """
@@ -121,83 +64,27 @@ class CustomCNN(BaseFeaturesExtractor):
 
 
 def main(args):
-    # Config
-    env_name = args.env_name
-    num_agents = args.num_agents
-    rollout_len = args.rollout_len
-    total_timesteps = args.total_timesteps
-    use_collective_reward = args.use_collective_reward
-    inequity_averse_reward = args.inequity_averse_reward
-    alpha = args.alpha
-    beta = args.beta
-
-    # Training
-    num_cpus = 4  # number of cpus
-    num_envs = 12  # number of parallel multi-agent environments
-    num_frames = 6  # number of frames to stack together; use >4 to avoid automatic VecTransposeImage
-    features_dim = (
-        128  # output layer of cnn extractor AND shared layer for policy and value functions
-    )
-    fcnet_hiddens = [1024, 128]  # Two hidden layers for cnn extractor
-    ent_coef = 0.001  # entropy coefficient in loss
-    batch_size = rollout_len * num_envs // 2  # This is from the rllib baseline implementation
-    lr = 0.0001
-    n_epochs = 30
-    gae_lambda = 1.0
-    gamma = 0.99
-    target_kl = 0.01
-    grad_clip = 40
-    verbose = 3
-
-    # TODO: Just going to use a dict to take a log of the different variables for now but I should change the structure here going forward
-    config = {
-        "env_name": env_name,
-        "num_agents": num_agents,
-        "rollout_len": rollout_len,
-        "total_timesteps": total_timesteps,
-        "use_collective_reward": use_collective_reward,
-        "inequity_averse_reward": inequity_averse_reward,
-        "alpha": alpha,
-        "beta": beta,
-        "num_cpus": num_cpus,
-        "num_envs": num_envs,
-        "num_frames": num_frames,
-        "features_dim": features_dim,
-        "fcnet_hiddens": fcnet_hiddens,
-        "ent_coef": ent_coef,
-        "batch_size": batch_size,
-        "lr": lr,
-        "n_epochs": n_epochs,
-        "gae_lambda": gae_lambda,
-        "gamma": gamma,
-        "target_kl": target_kl,
-        "grad_clip": grad_clip,
-        "verbose": verbose
-    }
 
     wandb.init(project="sb3_train",
                name=EXPERIMENT_NAME,
-               config=config,
+               config=args,
                sync_tensorboard=True,
                save_code=True
     )
 
     env = parallel_env(
-        max_cycles=rollout_len,
-        env=env_name,
-        num_agents=num_agents,
-        use_collective_reward=use_collective_reward,
-        inequity_averse_reward=inequity_averse_reward,
-        alpha=alpha,
-        beta=beta,
+        max_cycles=args.rollout_len,
+        env=args.env_name,
+        num_agents=args.num_agents,
+        use_collective_reward=args.use_collective_reward,
+        inequity_averse_reward=args.inequity_averse_reward,
+        alpha=args.alpha,
+        beta=args.beta,
     )
-    print("1. Env type is: ", type(env))
+
     env = ss.observation_lambda_v0(env, lambda x, _: x["curr_obs"], lambda s: s["curr_obs"])
-    print("2. Env type is: ", type(env))
     env = ss.frame_stack_v1(env, num_frames)
-    print("3. Env type is: ", type(env))
     env = ss.pettingzoo_env_to_vec_env_v1(env)
-    print("4. Env type is: ", type(env))
     env = ss.concat_vec_envs_v1(
         env, num_vec_envs=num_envs, num_cpus=num_cpus, base_class="stable_baselines3"
     )
@@ -218,7 +105,7 @@ def main(args):
         "CnnPolicy",
         env=env,
         learning_rate=lr,
-        n_steps=rollout_len,
+        n_steps=args.rollout_len,
         batch_size=batch_size,
         n_epochs=n_epochs,
         gamma=gamma,
@@ -232,7 +119,7 @@ def main(args):
         device=DEVICE
     )
     model.learn(
-        total_timesteps=total_timesteps,
+        total_timesteps=args.total_timesteps,
         callback=WandbCallback(
             gradient_save_freq=100,
             model_save_freq=1000,
@@ -248,7 +135,6 @@ def main(args):
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    # main(args)
-    conf = Config
-    print(conf)
+    # args = parse_args()
+    conf = Config()
+    main(conf)
