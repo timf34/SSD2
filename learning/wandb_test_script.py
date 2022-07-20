@@ -21,11 +21,13 @@ wandb.init(
     save_code=True,  # optional
 )
 
-def make_env():
-    env = gym.make("CartPole-v1")
-    # env = Monitor(env)  # record stats such as returns
-    return env
-env = DummyVecEnv([make_env])
+# def make_env():
+#     env = gym.make("CartPole-v1")
+#     # env = Monitor(env)  # record stats such as returns
+#     return env
+# env = DummyVecEnv([make_env])
+
+env = gym.make("CartPole-v1")
 # env = VecVideoRecorder(env, "videos",
 #   record_video_trigger=lambda x: x % 2000 == 0, video_length=200)  # record videos
 model = PPO(config["policy_type"], env, verbose=1, tensorboard_log=f"runs/{experiment_name}")
