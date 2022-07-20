@@ -1,3 +1,7 @@
+# Note that I'm not sure if this file can all be installed from a single `pip install -r wsl_requirements.txt` command.
+# The conflicts might prevent the all the files from being installed
+# In this case: comment out `gym`, `stable-baselines3` and `pettingzoo` and then install those individually by themselves.
+
 cffi==1.15.0
 cloudpickle==2.1.0
 cycler==0.11.0
