@@ -23,10 +23,12 @@ config = {
    , "env_name": "pistonball_v6"
 }
 
-experiment_name = f"PPO_{int(time.time())}"
+# Experiment name is time and date
+experiment_name = f"PPO_{time.strftime('%d_%m_%Y_%H%M%S')}"
 
 wandb.init(
     project="sb3-testing",
+    name=experiment_name,
     config=config,
     sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
     save_code=True
