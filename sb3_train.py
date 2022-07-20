@@ -12,10 +12,12 @@ from torch import nn
 import wandb
 from wandb.integration.sb3 import WandbCallback
 
-
 from social_dilemmas.envs.pettingzoo_env import parallel_env
+from config.configuration import Config
 
-device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+print("Available device is: ", DEVICE)
+
 
 WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
 wandb.login(key=WANDB_API_KEY)
@@ -158,7 +160,6 @@ def main(args):
         "alpha": alpha,
         "beta": beta,
         "num_cpus": num_cpus,
-        "num_cpus": num_cpus,
         "num_envs": num_envs,
         "num_frames": num_frames,
         "features_dim": features_dim,
@@ -228,6 +229,7 @@ def main(args):
         policy_kwargs=policy_kwargs,
         tensorboard_log=tensorboard_log,
         verbose=verbose,
+        device=DEVICE
     )
     model.learn(
         total_timesteps=total_timesteps,
@@ -247,4 +249,6 @@ def main(args):
 
 if __name__ == "__main__":
     args = parse_args()
-    main(args)
+    # main(args)
+    conf = Config
+    print(conf)
