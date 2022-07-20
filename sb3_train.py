@@ -7,11 +7,19 @@ import torch.nn.functional as F
 from stable_baselines3 import PPO
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 from stable_baselines3.common.vec_env.vec_monitor import VecMonitor
+import time
 from torch import nn
+import wandb
+from wandb.integration.sb3 import WandbCallback
+
 
 from social_dilemmas.envs.pettingzoo_env import parallel_env
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+
+WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
+wandb.login(key=WANDB_API_KEY)
+EXPERIMENT_NAME = f"PPO_{time.strftime('%d_%m_%Y_%H%M%S')}"
 
 
 def parse_args():
@@ -139,6 +147,40 @@ def main(args):
     grad_clip = 40
     verbose = 3
 
+    # TODO: Just going to use a dict to take a log of the different variables for now but I should change the structure here going forward
+    config = {
+        "env_name": env_name,
+        "num_agents": num_agents,
+        "rollout_len": rollout_len,
+        "total_timesteps": total_timesteps,
+        "use_collective_reward": use_collective_reward,
+        "inequity_averse_reward": inequity_averse_reward,
+        "alpha": alpha,
+        "beta": beta,
+        "num_cpus": num_cpus,
+        "num_cpus": num_cpus,
+        "num_envs": num_envs,
+        "num_frames": num_frames,
+        "features_dim": features_dim,
+        "fcnet_hiddens": fcnet_hiddens,
+        "ent_coef": ent_coef,
+        "batch_size": batch_size,
+        "lr": lr,
+        "n_epochs": n_epochs,
+        "gae_lambda": gae_lambda,
+        "gamma": gamma,
+        "target_kl": target_kl,
+        "grad_clip": grad_clip,
+        "verbose": verbose
+    }
+
+    wandb.init(project="sb3_train",
+               name=EXPERIMENT_NAME,
+               config=config,
+               sync_tensorboard=True,
+               save_code=True
+    )
+
     env = parallel_env(
         max_cycles=rollout_len,
         env=env_name,
@@ -187,7 +229,15 @@ def main(args):
         tensorboard_log=tensorboard_log,
         verbose=verbose,
     )
-    model.learn(total_timesteps=total_timesteps)
+    model.learn(
+        total_timesteps=total_timesteps,
+        callback=WandbCallback(
+            gradient_save_freq=100,
+            model_save_freq=1000,
+            model_save_path=f"models/{EXPERIMENT_NAME}",
+            verbose=2
+        )
+    )
 
     logdir = model.logger.dir
     model.save(logdir + "/model")
