@@ -83,10 +83,10 @@ def main(args):
     )
 
     env = ss.observation_lambda_v0(env, lambda x, _: x["curr_obs"], lambda s: s["curr_obs"])
-    env = ss.frame_stack_v1(env, num_frames)
+    env = ss.frame_stack_v1(env, args.num_frames)
     env = ss.pettingzoo_env_to_vec_env_v1(env)
     env = ss.concat_vec_envs_v1(
-        env, num_vec_envs=num_envs, num_cpus=num_cpus, base_class="stable_baselines3"
+        env, num_vec_envs=args.num_envs, num_cpus=args.num_cpus, base_class="stable_baselines3"
     )
     print("We made it")
     env = VecMonitor(env)
@@ -94,9 +94,9 @@ def main(args):
     policy_kwargs = dict(
         features_extractor_class=CustomCNN,
         features_extractor_kwargs=dict(
-            features_dim=features_dim, num_frames=num_frames, fcnet_hiddens=fcnet_hiddens
+            features_dim=args.features_dim, num_frames=args.num_frames, fcnet_hiddens=args.fcnet_hiddens
         ),
-        net_arch=[features_dim],
+        net_arch=[args.features_dim],
     )
 
     tensorboard_log = "./results/sb3/cleanup_ppo_paramsharing"
@@ -104,18 +104,18 @@ def main(args):
     model = PPO(
         "CnnPolicy",
         env=env,
-        learning_rate=lr,
+        learning_rate=args.lr,
         n_steps=args.rollout_len,
-        batch_size=batch_size,
-        n_epochs=n_epochs,
-        gamma=gamma,
-        gae_lambda=gae_lambda,
-        ent_coef=ent_coef,
-        max_grad_norm=grad_clip,
-        target_kl=target_kl,
+        batch_size=args.batch_size,
+        n_epochs=args.n_epochs,
+        gamma=args.gamma,
+        gae_lambda=args.gae_lambda,
+        ent_coef=args.ent_coef,
+        max_grad_norm=args.grad_clip,
+        target_kl=args.target_kl,
         policy_kwargs=policy_kwargs,
         tensorboard_log=tensorboard_log,
-        verbose=verbose,
+        verbose=args.verbose,
         device=DEVICE
     )
     model.learn(
