@@ -18,7 +18,7 @@ class Config:
     num_cpus: int = 4
     num_envs: int = 12  # Number of parallel multi-agent environments
     num_frames: int = 6  # Number of frames to stack together for input to the network; use >4 to avoid automatic VecTransposeImage
-    feature_dim: int= 128  # output layer of cnn extractor AND shared layer for policy and value functions
+    features_dim: int= 128  # output layer of cnn extractor AND shared layer for policy and value functions
     fcnet_hiddens: Tuple[int, int] = (1024, 128)  # Two hidden layers for cnn extractor
     ent_coef: int = 0.001  # entropy coefficient in loss
     batch_size: int = rollout_len * num_envs // 2  # This is from the rllib baseline implementation
