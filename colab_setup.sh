@@ -16,9 +16,12 @@ python -m venv colab_venv_uno_test
 # Install our packages
 pip install -r wsl_requirements.txt
 
+pip install torch==1.11.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
 # Individually install certain things
 pip install stable-baselines3==1.5.0
 pip install supersuit==3.5.0
 pip install tensorboard
 pip install opencv-python
 pip install gym==0.24.0
+# Colab is cuda 11.1 so hopefully this works
+pip install torch==1.11.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
