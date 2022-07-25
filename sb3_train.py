@@ -74,7 +74,6 @@ def main(args):
     wandb.init(project="sb3_train",
                name=EXPERIMENT_NAME,
                config=args,
-               sync_tensorboard=True,
                save_code=True
     )
 
