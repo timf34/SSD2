@@ -43,7 +43,7 @@ def estimate_time_for_full_training_runs(environment_steps: int, seconds: int) -
 
 
 if __name__ == '__main__':
-    estimate_time_for_full_training_runs(environment_steps=17580000, seconds=12780)
-
+    # estimate_time_for_full_training_runs(environment_steps=17580000, seconds=12780)
+    estimate_time_for_full_training_runs(environment_steps=10680000, seconds=8741)
 
 
