@@ -12,8 +12,10 @@
 
 # Assuming that we are using Python 3.7
 # We will first create our virtual environment if it has not been made already
-sudo apt-get install python3.7-venv
-python -m venv colab_venv_uno_test
+
+# We actually don't even need to use the venv if we just git clone each time we run a Colab.
+#sudo apt-get install python3.7-venv
+#python -m venv colab_venv_uno_test
 
 # Install our packages
 pip install -r wsl_requirements.txt
