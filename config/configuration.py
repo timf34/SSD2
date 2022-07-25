@@ -8,7 +8,7 @@ class Config:
     env_name: str = "harvest" # Choices: ["harvest", "cleanup"]
     num_agents: int = 5
     rollout_len: int = 1000
-    total_timesteps: int = 5e8
+    total_timesteps: int = 1e8
     use_collective_reward: bool = False # Give each agent the collective reward across all agents
     inequity_averse_reward: bool = False # Use inequity averse rewards from 'Inequity aversion...' paper
     alpha: float = 5
