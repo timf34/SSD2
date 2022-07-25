@@ -74,6 +74,7 @@ def main(args):
     wandb.init(project="sb3_train",
                name=EXPERIMENT_NAME,
                config=args,
+               sync_tensorboard=True,
                save_code=True
     )
 
@@ -106,6 +107,7 @@ def main(args):
         net_arch=[args.features_dim],
     )
 
+    tensorboard_log = "./results/sb3/cleanup_ppo_paramsharing"
 
     model = PPO(
         "CnnPolicy",
@@ -120,13 +122,14 @@ def main(args):
         max_grad_norm=args.grad_clip,
         target_kl=args.target_kl,
         policy_kwargs=policy_kwargs,
+        tensorboard_log=tensorboard_log,
         verbose=args.verbose,
         device=DEVICE
     )
     model.learn(
         total_timesteps=args.total_timesteps,
         callback=WandbCallback(
-            gradient_save_freq=100,
+            gradient_save_freq=1000,
             model_save_freq=1000,
             model_save_path=f"models/{EXPERIMENT_NAME}",
             verbose=2
@@ -134,6 +137,7 @@ def main(args):
     )
 
     logdir = model.logger.dir
+    # TODO: This is too late to be saving the model if I want to do any sort of checkpointing; add a proper callback!
     model.save(logdir + "/model")
     del model
     model = PPO.load(logdir + "/model")  # noqa: F841
