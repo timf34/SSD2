@@ -26,7 +26,7 @@ wandb.login(key=WANDB_API_KEY)
 EXPERIMENT_NAME = f"PPO_{time.strftime('%d_%m_%Y_%H%M%S')}"
 
 LOG_DIR = '/logs/vec_monitor/'
-os.makedirs(LOG_DIR, exists_ok=True)
+os.makedirs(LOG_DIR, exist_ok=True)
 
 
 # Use this with lambda wrapper returning observations only
