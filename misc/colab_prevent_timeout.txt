@@ -1,0 +1,21 @@
+#@markdown #**Check GPU type**
+#@markdown ### Factory reset runtime if you don't have the desired GPU.
+
+#@markdown ---
+
+
+
+
+#@markdown V100 = Excellent (*Available only for Colab Pro users*)
+
+#@markdown P100 = Very Good
+
+#@markdown T4 = Good (*preferred*)
+
+#@markdown K80 = Meh
+
+#@markdown P4 = (*Not Recommended*)
+
+#@markdown ---
+
+!nvidia-smi -L
