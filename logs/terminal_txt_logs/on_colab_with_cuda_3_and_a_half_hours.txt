@@ -1,0 +1,4 @@
+This is the first long-ish training run I have done on Colab with Cuda
+
+Logs can be found here... takes a while to copy paste and its not doing it properly
+https://wandb.ai/timf34/sb3_train/runs/rt3gttjf/logs
