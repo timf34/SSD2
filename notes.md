@@ -27,6 +27,14 @@ libraries (the `requirements.txt` file went from 19 to 51 lines after pip instal
 
 ## Log 
 
+### 25/7/22
+
+- added a filename to VecMonitor (I don't think it was previously recording anything locally (i.e. saving info))
+  - Note that it looks like logs might actually just be saved to the ./results folder by default!!!
+- Removed tensorboard code
+- Added quick easy code for estimating how long a full training run would take. 
+
+
 ### 20/7/22
 
 **Integrated proper wandb logging; installed torch with cuda on WSL2.**
