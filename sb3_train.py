@@ -6,8 +6,10 @@ import torch
 import torch.nn.functional as F
 from stable_baselines3 import PPO
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
-from stable_baselines3.common.vec_env.vec_monitor import VecMonitor
 import time
+import os
+
+from stable_baselines3.common.vec_env.vec_monitor import VecMonitor
 from torch import nn
 import wandb
 from wandb.integration.sb3 import WandbCallback
@@ -22,6 +24,10 @@ print("Available device is: ", DEVICE)
 WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
 wandb.login(key=WANDB_API_KEY)
 EXPERIMENT_NAME = f"PPO_{time.strftime('%d_%m_%Y_%H%M%S')}"
+
+LOG_DIR = '/logs/vec_monitor/'
+os.makedirs(LOG_DIR, exists_ok=True)
+
 
 # Use this with lambda wrapper returning observations only
 class CustomCNN(BaseFeaturesExtractor):
@@ -89,7 +95,9 @@ def main(args):
         env, num_vec_envs=args.num_envs, num_cpus=args.num_cpus, base_class="stable_baselines3"
     )
     print("We made it")
-    env = VecMonitor(env)
+    # This monitors/ logs the results of our vectorized environment; we need to pass a filename/ directory to save to
+    # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
+    env = VecMonitor(env, LOG_DIR)
 
     policy_kwargs = dict(
         features_extractor_class=CustomCNN,
@@ -99,7 +107,6 @@ def main(args):
         net_arch=[args.features_dim],
     )
 
-    tensorboard_log = "./results/sb3/cleanup_ppo_paramsharing"
 
     model = PPO(
         "CnnPolicy",
@@ -114,7 +121,6 @@ def main(args):
         max_grad_norm=args.grad_clip,
         target_kl=args.target_kl,
         policy_kwargs=policy_kwargs,
-        tensorboard_log=tensorboard_log,
         verbose=args.verbose,
         device=DEVICE
     )
