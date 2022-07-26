@@ -5,7 +5,7 @@ from typing import Tuple
 @dataclass
 class Config:
     # Parser args
-    env_name: str = "harvest" # Choices: ["harvest", "cleanup"]
+    env_name: str = "cleanup" # Choices: ["harvest", "cleanup"]
     num_agents: int = 5
     rollout_len: int = 1000
     total_timesteps: int = 1e8
