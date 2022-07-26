@@ -97,7 +97,7 @@ class SwitchEnv(MapEnv):
 
     @property
     def action_space(self):
-        return DiscreteWithDType(8, dtype=np.uint8)
+        return DiscreteWithDType(8, dtype=np.int8)
 
     def setup_agents(self):
         map_with_agents = self.get_map_with_agents()
