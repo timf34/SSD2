@@ -1,4 +1,6 @@
-import argparse
+import os
+import datetime
+import time
 
 import gym
 import supersuit as ss
@@ -6,9 +8,6 @@ import torch
 import torch.nn.functional as F
 from stable_baselines3 import PPO
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
-import time
-import os
-
 from stable_baselines3.common.vec_env.vec_monitor import VecMonitor
 from torch import nn
 import wandb
@@ -25,8 +24,12 @@ WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
 wandb.login(key=WANDB_API_KEY)
 EXPERIMENT_NAME = f"PPO_{time.strftime('%d_%m_%Y_%H%M%S')}"
 
-LOG_DIR = '/logs/vec_monitor/'
+
+# Directory for VecMonitor
+LOG_DIR = "./vec_monitor_logs/"
+datetime_filename = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 os.makedirs(LOG_DIR, exist_ok=True)
+log_file_path = os.path.join(LOG_DIR, f"{datetime_filename}")
 
 
 # Use this with lambda wrapper returning observations only
@@ -97,7 +100,7 @@ def main(args):
     print("We made it")
     # This monitors/ logs the results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
-    env = VecMonitor(env, LOG_DIR)
+    env = VecMonitor(env, filename=log_file_path)
 
     policy_kwargs = dict(
         features_extractor_class=CustomCNN,
