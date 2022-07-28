@@ -44,6 +44,10 @@ def estimate_time_for_full_training_runs(environment_steps: int, seconds: int) -
 
 if __name__ == '__main__':
     # estimate_time_for_full_training_runs(environment_steps=17580000, seconds=12780)
-    estimate_time_for_full_training_runs(environment_steps=10680000, seconds=8741)
+    # estimate_time_for_full_training_runs(environment_steps=10680000, seconds=8741)
+    # estimate_time_for_full_training_runs(environment_steps=20520000, seconds=12805)
+
+    # For Eugene's env with Ray (very similar numbers - 18.7 hours for 1e8 steps on a P100)
+    estimate_time_for_full_training_runs(environment_steps=2112000, seconds=1425)
 
 
