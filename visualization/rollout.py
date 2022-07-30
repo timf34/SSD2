@@ -56,12 +56,8 @@ class Controller(object):
             for agent in agents:
                 rand_action = np.random.randint(action_dim)
                 agent_action_dict[agent.agent_id] = rand_action
-            (
-                obs,
-                rew,
-                dones,
-                info,
-            ) = self.env.step(agent_action_dict)
+
+            (obs, rew, dones, info) = self.env.step(agent_action_dict)
 
             sys.stdout.flush()
 
@@ -102,6 +98,7 @@ class Controller(object):
             if not os.path.exists(image_path):
                 os.makedirs(image_path)
 
+            # Still necessary to save the frames to disk
             rewards, observations, full_obs = self.rollout(horizon=horizon, save_path=image_path)
             utility_funcs.make_video_from_image_dir(path, image_path, fps=fps, video_name=video_name)
 
@@ -117,9 +114,4 @@ if __name__ == "__main__":
     add_default_args(parser)
     args = parser.parse_args()
     c = Controller(args)
-    c.render_rollout(
-        path="rollout",
-        horizon=100,
-        render_type="pretty",
-        fps=1,
-    )
+    c.render_rollout(path="rollout", horizon=100, render_type="pretty", fps=1)
