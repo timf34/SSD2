@@ -8,7 +8,6 @@ from config.configuration import Config as Config
 from social_dilemmas.envs.pettingzoo_env import parallel_env
 
 
-
 class RenderRolloutVecMonitor(VecMonitor):
     """
     This class inherits from VecMonitor, simply for the purpose of saving rollouts of episodes during training.
@@ -17,9 +16,9 @@ class RenderRolloutVecMonitor(VecMonitor):
         super(RenderRolloutVecMonitor, self).__init__(env, filename)
 
 
-def get_parallelized_environment(env_name: str = "cleanup") -> SB3VecEnvWrapper:
+def get_parallelized_env(env_name: str="cleanup"):
     args = Config()
-    env = parallel_env(
+    return parallel_env(
         max_cycles=args.rollout_len,
         env=env_name,
         num_agents=args.num_agents,
@@ -29,6 +28,9 @@ def get_parallelized_environment(env_name: str = "cleanup") -> SB3VecEnvWrapper:
         beta=args.beta,
     )
 
+def get_supersuit_parallelized_environment(env_name: str = "cleanup") -> SB3VecEnvWrapper:
+    args = Config()
+    env = get_parallelized_env((env_name))
     env = ss.observation_lambda_v0(env, lambda x, _: x["curr_obs"], lambda s: s["curr_obs"])
     env = ss.frame_stack_v1(env, args.num_frames)
     env = ss.pettingzoo_env_to_vec_env_v1(env)
@@ -38,6 +40,3 @@ def get_parallelized_environment(env_name: str = "cleanup") -> SB3VecEnvWrapper:
 
     return env
 
-
-if __name__ == '__main__':
-    get_parallelized_environment()
