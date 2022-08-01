@@ -402,7 +402,7 @@ class MapEnv(ParallelEnv):
 
     def full_map_to_colors(self):
         map_with_agents = self.get_map_with_agents()
-        rgb_arr = np.zeros((map_with_agents.shape[0], map_with_agents.shape[1], 3), dtype=int)
+        rgb_arr = np.zeros((map_with_agents.shape[0], map_with_agents.shape[1], 3), dtype=np.uint8)
         return self.map_to_colors(map_with_agents, self.color_map, rgb_arr)
 
     def color_view(self, agent):
