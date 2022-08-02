@@ -81,7 +81,8 @@ class ssd_parallel_env(ParallelEnv):
 
 
 class _parallel_env(ssd_parallel_env, EzPickle):
-    metadata = {"render.modes": ["human", "rgb_array"]}
+    metadata = {"render_modes": ["human", "rgb_array"],
+                "video.frames_per_second": 5}
 
     def __init__(self, max_cycles, **ssd_args):
         EzPickle.__init__(self, max_cycles, **ssd_args)
