@@ -48,7 +48,6 @@ class Controller(object):
         shape = self.env.world_map.shape
         full_obs = [np.zeros((shape[0], shape[1], 3), dtype=np.uint8) for _ in range(horizon)]
 
-
         for i in range(horizon):
             agents = list(self.env.agents.values())
             action_dim = self.env.action_space.n
@@ -66,6 +65,7 @@ class Controller(object):
                 if i % 10 == 0:
                     print(f"Saved frame {str(i)}/{str(horizon)}")
 
+            # Shape is (25, 18, 3) still
             rgb_arr = self.env.full_map_to_colors()
             full_obs[i] = rgb_arr.astype(np.uint8)
             observations.append(obs["agent-0"])
