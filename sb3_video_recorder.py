@@ -1,10 +1,7 @@
-import numpy as np
-import os
 import sys
 
 from stable_baselines3.common.vec_env.vec_video_recorder import VecVideoRecorder
 
-from social_dilemmas.envs.cleanup import CleanupEnv
 from utils import get_supersuit_parallelized_environment, get_parallelized_env, Timer
 
 # Note to run this file by itself (when in learning dir) from the terminal, run `python -m learning.sb3_video_recorder`
