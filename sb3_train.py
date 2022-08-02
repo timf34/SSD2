@@ -9,6 +9,7 @@ import torch.nn.functional as F
 from stable_baselines3 import PPO
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 from stable_baselines3.common.vec_env.vec_monitor import VecMonitor
+from stable_baselines3.common.vec_env.vec_video_recorder import VecVideoRecorder
 from torch import nn
 import wandb
 from wandb.integration.sb3 import WandbCallback
@@ -27,9 +28,11 @@ EXPERIMENT_NAME = f"PPO_{time.strftime('%d_%m_%Y_%H%M%S')}"
 
 # Directory for VecMonitor
 LOG_DIR = "./vec_monitor_logs/"
+VIDEO_DIR = "./vec_videos/"
 datetime_filename = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 os.makedirs(LOG_DIR, exist_ok=True)
 log_file_path = os.path.join(LOG_DIR, f"{datetime_filename}")
+video_file_path = os.path.join(VIDEO_DIR, f"{datetime_filename}")
 
 
 # Use this with lambda wrapper returning observations only
@@ -71,7 +74,6 @@ class CustomCNN(BaseFeaturesExtractor):
         features = F.relu(self.fc2(features))
         return features
 
-
 def main(args):
 
     wandb.init(project="sb3_train",
@@ -97,6 +99,7 @@ def main(args):
     env = ss.concat_vec_envs_v1(
         env, num_vec_envs=args.num_envs, num_cpus=args.num_cpus, base_class="stable_baselines3"
     )
+    env = VecVideoRecorder(env, video_file_path, record_video_trigger=lambda x: x % 10000 == 0)
     print("We made it")
     # This monitors/ logs the results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
