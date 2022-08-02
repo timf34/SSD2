@@ -402,6 +402,7 @@ class MapEnv(ParallelEnv):
 
     def full_map_to_colors(self):
         map_with_agents = self.get_map_with_agents()
+        # Shape is (25, 18, 3) right now
         rgb_arr = np.zeros((map_with_agents.shape[0], map_with_agents.shape[1], 3), dtype=np.uint8)
         return self.map_to_colors(map_with_agents, self.color_map, rgb_arr)
 
@@ -475,6 +476,7 @@ class MapEnv(ParallelEnv):
             filename: If a string is passed, will save the image
                       to disk at this location.
         """
+        # Shape is (25, 18, 3) right now
         rgb_arr = self.full_map_to_colors()
         if mode == "human":
             plt.cla()
