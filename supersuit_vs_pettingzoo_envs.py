@@ -1,11 +1,14 @@
 # I will move this file to the learning directory afterwards.
 
 # There seem to be some fundamental differences between the two environment wrappers, they behave differently when
-# put on top of one anther
+# put on top of one another
 
 import numpy as np
+import threading
+import os
+import psutil
+from signal import SIGINT, signal
 
-from social_dilemmas.envs.cleanup import CleanupEnv
 from utils import get_supersuit_parallelized_environment, get_parallelized_env
 
 
@@ -14,10 +17,17 @@ class CompareSupersuitAndPettingzoo:
         self.pz_env = get_parallelized_env("cleanup")
         self.ss_env = get_supersuit_parallelized_environment("cleanup")
         print("ss_env.metadata: ", self.ss_env.metadata)
+        # Clost the envs
+        self.pz_env.close()
+        self.ss_env.close()
 
     def print_types(self):
         print("pz_env type: ", type(self.pz_env))
         print("ss_env type: ", type(self.ss_env))
+
+    def print_env_information(self):
+        # These are just useful for debugging
+        print("Num agents and possible agents", self.pz_env.num_agents, self.pz_env.possible_agents)
 
     def print_attributes(self):
         # Print the attributes of both envs
@@ -39,16 +49,15 @@ class CompareSupersuitAndPettingzoo:
             if not self.pz_env.agents:
                 print("pz_env is empty")
                 self.pz_env.reset()
-        print("pz_env rollout complete")
-        print("Num agents and possible agents", self.pz_env.num_agents, self.pz_env.possible_agents)
 
     def rollout_ss_env(self):
         # This page is useful: https://github.com/Farama-Foundation/SuperSuit/blob/master/test/test_vector/test_pettingzoo_to_vec.py
         MAX_CYCLES = 3
         self.ss_env.reset()
         n_act = self.ss_env.action_space
-        for _ in range(MAX_CYCLES * self.ss_env.num_envs):  # For some reason, the Markov env doesn't inherit the num_agents attribute from the parallelized env
-            actions = [self.ss_env.action_space.sample() for i in range(self.ss_env.num_envs)]
+        # For some reason, the Markov env doesn't inherit the num_agents attribute from the parallelized env
+        for _ in range(MAX_CYCLES * self.ss_env.num_envs):
+            actions = [self.ss_env.action_space.sample() for _ in range(self.ss_env.num_envs)]
             _, _, _, _ = self.ss_env.step(actions)
             self.ss_env.render(mode='human')
             if not self.ss_env.num_envs:
@@ -57,9 +66,17 @@ class CompareSupersuitAndPettingzoo:
         print("ss_env rollout complete")
 
 
+def shutdown_handler(*_):
+    print("ctrl-c invoked")
+    exit(0)
+
+
 if __name__ == '__main__':
+    signal(SIGINT, shutdown_handler)
     x = CompareSupersuitAndPettingzoo()
-    x.print_types()
+    # x.print_types()
     # x.print_attributes()
-    #x.rollout_pz_env()
-    x.rollout_ss_env()
+    x.rollout_pz_env()
+    # x.rollout_ss_env()
+    print("we are done")
+
