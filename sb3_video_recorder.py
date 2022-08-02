@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import sys
 
 from stable_baselines3.common.vec_env.vec_video_recorder import VecVideoRecorder
 
@@ -11,46 +12,34 @@ from utils import get_supersuit_parallelized_environment, get_parallelized_env
 
 class TestingVideoRecorder:
     def __init__(self):
-        self.env = get_parallelized_env("cleanup")
+        self.env = get_supersuit_parallelized_environment("cleanup")
         self.env.reset()
-        print("env type before is: ", type(self.env))
-        # self.env = VecVideoRecorder(self.env,
-        #                             video_folder='./videos/',
-        #                             record_video_trigger=lambda x: x == 0)
-        print("env type after is: ", type(self.env))
+        self.env = VecVideoRecorder(self.env, video_folder='./videos/', record_video_trigger=lambda x: x == 0)
 
     def print_attributes(self):
-        """
-        Agents are 100% an attribute of the environment, I might need to use another '.' in order to access them?
-
-        I should print all the attributes of the environment to help me get a better idea
-        """
-        # Print the attributes of self.env
         print("Attributes of self.env:")
         for attr in dir(self.env):
             print(attr)
 
-    def test_rollout(self):
-        """
-                I just need to test the rollout for a vectorized env with multiple agents first!
-
-                Agents are 100% an attribute of the environment, I might need to use another '.' in order to access them?
-
-                I should print all the attributes of the environment to help me get a better idea
-        """
-        # agent_ids = ["agent-" + str(agent_number) for agent_number in range(5)]
-        # actions = {}
-        print(self.env.action_space("agent-0"))
-        n_act = self.env.action_space("agent-0").n
-        actions = {agent: np.random.randint(n_act) for agent in self.env.agents}
-
-        print("agents", self.env.agents)
-        print("we made it dawg")
+    def rollout(self) -> None:
+        MAX_CYCLES = 100
+        self.env.reset()
+        n_act = self.env.action_space
+        # For some reason, the Markov env doesn't inherit the num_agents attribute from the parallelized env
+        for _ in range(MAX_CYCLES * self.env.num_envs):
+            actions = [self.env.action_space.sample() for _ in range(self.env.num_envs)]
+            _, _, _, _ = self.env.step(actions)
+            # self.env.render(mode='human')  # Uncomment this to display to the screen
+        self.env.close()
+        print("ss_env rollout complete")
 
 
 if __name__ == "__main__":
     print("we have entered")
     x = TestingVideoRecorder()
-    x.print_attributes()
-    x.test_rollout()
-    # x.test_video_recorder()
+    # x.print_attributes()
+    x.rollout()
+
+    print("we are going to try and exit... it doesnt seem to exit")
+    sys.exit(0)
+    print("we have exited")
