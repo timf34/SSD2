@@ -480,6 +480,7 @@ class MapEnv(ParallelEnv):
         rgb_arr = self.full_map_to_colors()
         if mode == "human":
             plt.cla()
+            # Shape is still (25, 18, 3) right no
             plt.imshow(rgb_arr, interpolation="nearest")
             if filename is None:
                 plt.show(block=False)
