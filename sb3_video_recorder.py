@@ -5,7 +5,7 @@ import sys
 from stable_baselines3.common.vec_env.vec_video_recorder import VecVideoRecorder
 
 from social_dilemmas.envs.cleanup import CleanupEnv
-from utils import get_supersuit_parallelized_environment, get_parallelized_env
+from utils import get_supersuit_parallelized_environment, get_parallelized_env, Timer
 
 # Note to run this file by itself (when in learning dir) from the terminal, run `python -m learning.sb3_video_recorder`
 
@@ -14,7 +14,7 @@ class TestingVideoRecorder:
     def __init__(self):
         self.env = get_supersuit_parallelized_environment("cleanup")
         self.env.reset()
-        self.env = VecVideoRecorder(self.env, video_folder='./videos/', record_video_trigger=lambda x: x == 0)
+        # self.env = VecVideoRecorder(self.env, video_folder='./videos/', record_video_trigger=lambda x: x == 0)
 
     def print_attributes(self):
         print("Attributes of self.env:")
@@ -26,12 +26,15 @@ class TestingVideoRecorder:
         self.env.reset()
         n_act = self.env.action_space
         # For some reason, the Markov env doesn't inherit the num_agents attribute from the parallelized env
+        t = Timer()
+        t.begin()
         for _ in range(MAX_CYCLES * self.env.num_envs):
             actions = [self.env.action_space.sample() for _ in range(self.env.num_envs)]
             _, _, _, _ = self.env.step(actions)
             # self.env.render(mode='human')  # Uncomment this to display to the screen
+        print(f"Time elapsed: {t.elapsed()}")
         self.env.close()
-        print("ss_env rollout complete")
+        print(f"Time elapsed after closing: {t.elapsed()}")
 
 
 if __name__ == "__main__":

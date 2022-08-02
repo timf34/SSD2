@@ -1,4 +1,5 @@
 import supersuit as ss
+import time
 
 from stable_baselines3.common.vec_env.vec_monitor import VecMonitor
 from stable_baselines3.common.vec_env.vec_video_recorder import VecVideoRecorder
@@ -40,3 +41,13 @@ def get_supersuit_parallelized_environment(env_name: str = "cleanup") -> SB3VecE
 
     return env
 
+
+class Timer:
+    def __init__(self):
+        self.start = 0
+
+    def begin(self) -> None:
+        self.start = time.perf_counter()
+
+    def elapsed(self) -> float:
+        return time.perf_counter() - self.start
