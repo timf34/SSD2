@@ -8,6 +8,7 @@ from gym.spaces import Box, Dict
 # from ray.rllib.env import MultiAgentEnv
 from pettingzoo import ParallelEnv
 from stable_baselines3.common import callbacks
+import cv2
 
 
 _MAP_ENV_ACTIONS = {
@@ -477,11 +478,21 @@ class MapEnv(ParallelEnv):
                       to disk at this location.
         """
         # Shape is (25, 18, 3) right now
+
         rgb_arr = self.full_map_to_colors()
+
+        # Resize numpy array size (25, 18, 3) to (300, 216, 3)
+        # Scale up to 300x216
+        # This largely works except that the resizing isn't quite spot on.
+        rgb_arr = cv2.resize(rgb_arr, (300, 216), interpolation=cv2.INTER_NEAREST)
+
+        # Going to put these two in here for the minute... it might really slow things down but we'll see!
+        # plt.cla()
+        # plt.imshow(rgb_arr, interpolation="nearest")
         if mode == "human":
-            plt.cla()
+            # plt.cla()
             # Shape is still (25, 18, 3) right no
-            plt.imshow(rgb_arr, interpolation="nearest")
+            # plt.imshow(rgb_arr, interpolation="nearest")
             if filename is None:
                 plt.show(block=False)
             else:
