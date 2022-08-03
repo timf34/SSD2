@@ -5,14 +5,41 @@ from typing import Optional, Tuple, Dict, List
 import time
 
 
+agent_dict = {"indivudal_rewards": [], "beam_fired": [], "beam_hit": [], "apples_consumed": []}
+
+
 class CustomVecMonitor(VecMonitor):
     def __init__(self,
                  venv: VecEnv,
                  filename: Optional[str] = None,
                  info_keywords: Tuple[str, ...] = (),
+                 number_agents: int = 5,
                  ):
         super().__init__(venv, filename, info_keywords)
         self.per_agent_returns: Dict[int, List[int]] = {}
+        self.number_agents = number_agents
+
+        if self.number_agents is not None:
+            for i in range(self.number_agents):
+                agent_id = f"agent-{str(i)}"
+
+                self.agents
+
+
+
+    def print_venv_attributes(self):
+        print("\n Here are the attributes of the venv: ")
+        # Pretty print the __dict__ of the venv
+        for key, value in self.venv.__dict__.items():
+            print(f"{key}: {value}")
+
+        print("\n Here are the attributes of the venv.env: ")
+        for key, value in self.venv.env.__dict__.items():
+            print(f"{key}: {value}")
+
+        print("\n Here are the attributes of the venv.env.venv: ")
+        for key, value in self.venv.env.venv.__dict__.items():
+            print(f"{key}: {value}")
 
     def step_wait(self) -> VecEnvStepReturn:
         obs, rewards, dones, infos = self.venv.step_wait()

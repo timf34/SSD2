@@ -157,7 +157,49 @@ def main(args):
     model = PPO.load(f"{logdir}/model")
 
 
+def test_(args):
+    wandb.init(
+        project="sb3_train",
+        name=args.wandb_experiment_name,
+        config=args,
+        mode=args.wandb_mode,
+        sync_tensorboard=True,
+        save_code=True,
+        # monitor_gym=True,
+    )
+
+    env = parallel_env(
+        max_cycles=args.rollout_len,
+        env=args.env_name,
+        num_agents=args.num_agents,
+        use_collective_reward=args.use_collective_reward,
+        inequity_averse_reward=args.inequity_averse_reward,
+        alpha=args.alpha,
+        beta=args.beta,
+    )
+
+    env = ss.observation_lambda_v0(env, lambda x, _: x["curr_obs"], lambda s: s["curr_obs"])
+    env = ss.frame_stack_v1(env, args.num_frames)
+    env = ss.pettingzoo_env_to_vec_env_v1(env)
+    env = ss.concat_vec_envs_v1(
+        env, num_vec_envs=args.num_envs, num_cpus=args.num_cpus, base_class="stable_baselines3"
+    )
+    env = WandbVecVideoRecorder(env,
+                                video_file_path,
+                                record_video_trigger=lambda x: x % args.save_vid_every_n_steps == 0,
+                                video_length=args.vec_video_rollout_legnth,
+                                use_wandb=args.use_wandb,
+                                number_agents=args.num_agents,
+                                )
+    print("We made it")
+    # This monitors/ logs the results of our vectorized environment; we need to pass a filename/ directory to save to
+    # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
+    env = CustomVecMonitor(env, filename=log_file_path)
+    env.print_venv_attributes()
+
+
 if __name__ == "__main__":
     # args = parse_args()
     conf = Config()
-    main(conf)
+    # main(conf)
+    test_(conf)
