@@ -201,5 +201,5 @@ def test_(args):
 if __name__ == "__main__":
     # args = parse_args()
     conf = Config()
-    # main(conf)
-    test_(conf)
+    main(conf)
+    # test_(conf)
