@@ -17,8 +17,8 @@ class Config:
     beta: float = 0.05
 
     # Args from def main():
-    num_cpus: int = 4
-    num_envs: int = 12  # Number of parallel multi-agent environments
+    num_cpus: int = 8
+    num_envs: int = 16  # Number of parallel multi-agent environments
     num_frames: int = 6  # Number of frames to stack together for input to the network; use >4 to avoid automatic VecTransposeImage
     features_dim: int= 128  # output layer of cnn extractor AND shared layer for policy and value functions
     fcnet_hiddens: Tuple[int, int] = (1024, 128)  # Two hidden layers for cnn extractor
