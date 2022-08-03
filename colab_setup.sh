@@ -33,5 +33,8 @@ pip install wandb
 pip install pygame
 pip install pymunk
 
-# Colab is cuda 11.1 so hopefully this works
-pip install torch==1.11.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
+# Colab comes with 1.12.0 by default, although we have 1.11.0 locally!
+# If Colab:
+pip install torch==1.12.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
+# Else:
+# pip install torch==1.11.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
