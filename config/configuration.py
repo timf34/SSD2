@@ -30,6 +30,10 @@ class Config:
     grad_clip:int = 40
     verbose: int = 3
 
+    # Wandb args
+    use_wandb: bool = True
+    save_vid_every_n_steps: int = 10000
+
 
 def test_config():
     print(Config)

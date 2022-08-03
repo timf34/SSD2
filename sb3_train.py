@@ -9,7 +9,6 @@ import torch.nn.functional as F
 from stable_baselines3 import PPO
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 from stable_baselines3.common.vec_env.vec_monitor import VecMonitor
-from stable_baselines3.common.vec_env.vec_video_recorder import VecVideoRecorder
 from torch import nn
 import wandb
 from wandb.integration.sb3 import WandbCallback
@@ -77,12 +76,13 @@ class CustomCNN(BaseFeaturesExtractor):
 
 def main(args):
 
-    wandb.init(project="sb3_train",
-               name=EXPERIMENT_NAME,
-               config=args,
-               sync_tensorboard=True,
-               save_code=True,
-               # monitor_gym=True,
+    wandb.init(
+        project="sb3_train",
+        name=EXPERIMENT_NAME,
+        config=args,
+        sync_tensorboard=True,
+        save_code=True,
+        # monitor_gym=True,
     )
 
     env = parallel_env(
@@ -101,7 +101,10 @@ def main(args):
     env = ss.concat_vec_envs_v1(
         env, num_vec_envs=args.num_envs, num_cpus=args.num_cpus, base_class="stable_baselines3"
     )
-    env = WandbVecVideoRecorder(env, video_file_path, record_video_trigger=lambda x: x % 1000 == 0)
+    env = WandbVecVideoRecorder(env,
+                                video_file_path,
+                                record_video_trigger=lambda x: x % args.save_vid_every_n_steps == 0,
+                                use_wandb=args.use_wandb)
     print("We made it")
     # This monitors/ logs the results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
@@ -146,9 +149,9 @@ def main(args):
 
     logdir = model.logger.dir
     # TODO: This is too late to be saving the model if I want to do any sort of checkpointing; add a proper callback!
-    model.save(logdir + "/model")
+    model.save(f"{logdir}/model")
     del model
-    model = PPO.load(logdir + "/model")  # noqa: F841
+    model = PPO.load(f"{logdir}/model")
 
 
 if __name__ == "__main__":
