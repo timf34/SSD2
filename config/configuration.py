@@ -36,6 +36,8 @@ class Config:
     use_wandb: bool = True
     save_vid_every_n_steps: int = 10000
 
+    vec_video_rollout_legnth: int = 1000 # How many steps to save to the video (default is 200, and total episode would be 1000)
+
     def __post_init__(self):
         self.wandb_experiment_name: str = f"PPO_ONE_AGENT_{time.strftime('%d_%m_%Y_%H%M%S')}"
 

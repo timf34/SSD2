@@ -102,7 +102,9 @@ def main(args):
     env = WandbVecVideoRecorder(env,
                                 video_file_path,
                                 record_video_trigger=lambda x: x % args.save_vid_every_n_steps == 0,
-                                use_wandb=args.use_wandb)
+                                video_length=args.vec_video_rollout_legnth,
+                                use_wandb=args.use_wandb,
+                                )
     print("We made it")
     # This monitors/ logs the results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
