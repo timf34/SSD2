@@ -14,6 +14,7 @@ from torch import nn
 import wandb
 from wandb.integration.sb3 import WandbCallback
 
+from wandb_vec_vid_recorder import WandbVecVideoRecorder
 from social_dilemmas.envs.pettingzoo_env import parallel_env
 from config.configuration import Config
 
@@ -80,7 +81,8 @@ def main(args):
                name=EXPERIMENT_NAME,
                config=args,
                sync_tensorboard=True,
-               save_code=True
+               save_code=True,
+               # monitor_gym=True,
     )
 
     env = parallel_env(
@@ -99,7 +101,7 @@ def main(args):
     env = ss.concat_vec_envs_v1(
         env, num_vec_envs=args.num_envs, num_cpus=args.num_cpus, base_class="stable_baselines3"
     )
-    env = VecVideoRecorder(env, video_file_path, record_video_trigger=lambda x: x % 10000 == 0)
+    env = WandbVecVideoRecorder(env, video_file_path, record_video_trigger=lambda x: x % 1000 == 0)
     print("We made it")
     # This monitors/ logs the results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
