@@ -23,8 +23,6 @@ print("Available device is: ", DEVICE)
 
 WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
 wandb.login(key=WANDB_API_KEY)
-EXPERIMENT_NAME = f"PPO_{time.strftime('%d_%m_%Y_%H%M%S')}"
-
 
 # Directory for VecMonitor
 LOG_DIR = "./vec_monitor_logs/"
@@ -78,7 +76,7 @@ def main(args):
 
     wandb.init(
         project="sb3_train",
-        name=EXPERIMENT_NAME,
+        name=args.wandb_experiment_name,
         config=args,
         sync_tensorboard=True,
         save_code=True,

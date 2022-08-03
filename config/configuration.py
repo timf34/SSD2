@@ -1,12 +1,14 @@
 from dataclasses import dataclass, field, asdict
 from typing import Tuple
+import time
+
 
 
 @dataclass
 class Config:
     # Parser args
     env_name: str = "cleanup" # Choices: ["harvest", "cleanup"]
-    num_agents: int = 5
+    num_agents: int = 1
     rollout_len: int = 1000
     total_timesteps: int = 1e8
     use_collective_reward: bool = False # Give each agent the collective reward across all agents
@@ -33,6 +35,9 @@ class Config:
     # Wandb args
     use_wandb: bool = True
     save_vid_every_n_steps: int = 10000
+
+    def __post_init__(self):
+        self.wandb_experiment_name: str = f"PPO_ONE_AGENT_{time.strftime('%d_%m_%Y_%H%M%S')}"
 
 
 def test_config():
