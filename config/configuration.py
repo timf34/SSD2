@@ -18,8 +18,8 @@ class Config:
 
     # Args from def main():
     num_cpus: int = 6
-    num_envs: int = 12  # Number of parallel multi-agent environments
-    num_frames: int = 6  # Number of frames to stack together for input to the network; use >4 to avoid automatic VecTransposeImage
+    num_envs: int = 6  # Number of parallel multi-agent environments
+    num_frames: int = 8  # Number of frames to stack together for input to the network; use >4 to avoid automatic VecTransposeImage
     features_dim: int= 128  # output layer of cnn extractor AND shared layer for policy and value functions
     fcnet_hiddens: Tuple[int, int] = (1024, 128)  # Two hidden layers for cnn extractor
     ent_coef: int = 0.001  # entropy coefficient in loss
