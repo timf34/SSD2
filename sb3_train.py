@@ -140,7 +140,7 @@ def main(args):
         callback=WandbCallback(
             gradient_save_freq=1000,
             model_save_freq=1000,
-            model_save_path=f"models/{EXPERIMENT_NAME}",
+            model_save_path=f"models/{args.wandb_experiment_name}",
             verbose=2
         )
     )
