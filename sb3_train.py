@@ -16,6 +16,8 @@ from wandb.integration.sb3 import WandbCallback
 from wandb_vec_vid_recorder import WandbVecVideoRecorder
 from social_dilemmas.envs.pettingzoo_env import parallel_env
 from config.configuration import Config
+from custom_vec_monitor import CustomVecMonitor
+
 
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 print("Available device is: ", DEVICE)
@@ -78,6 +80,7 @@ def main(args):
         project="sb3_train",
         name=args.wandb_experiment_name,
         config=args,
+        mode=args.wandb_mode,
         sync_tensorboard=True,
         save_code=True,
         # monitor_gym=True,
@@ -108,7 +111,7 @@ def main(args):
     print("We made it")
     # This monitors/ logs the results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
-    env = VecMonitor(env, filename=log_file_path)
+    env = CustomVecMonitor(env, filename=log_file_path)
 
     policy_kwargs = dict(
         features_extractor_class=CustomCNN,
