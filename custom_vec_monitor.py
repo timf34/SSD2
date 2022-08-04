@@ -22,8 +22,8 @@ class CustomVecMonitor(VecMonitor):
         if self.number_agents is not None:
             for i in range(self.number_agents):
                 agent_id = f"agent-{str(i)}"
-
-                self.agents
+                pass
+                # self.agents
 
 
 
