@@ -111,7 +111,7 @@ def main(args):
     print("We made it")
     # This monitors/ logs the results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
-    env = CustomVecMonitor(env, filename=log_file_path)
+    env = VecMonitor(env, filename=log_file_path)
 
     policy_kwargs = dict(
         features_extractor_class=CustomCNN,
@@ -202,4 +202,5 @@ if __name__ == "__main__":
     # args = parse_args()
     conf = Config()
     main(conf)
+    # TODO: add a better file for doing testing!
     # test_(conf)
