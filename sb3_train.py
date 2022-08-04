@@ -1,6 +1,5 @@
 import os
 import datetime
-import time
 
 import gym
 import supersuit as ss
@@ -13,7 +12,7 @@ from torch import nn
 import wandb
 from wandb.integration.sb3 import WandbCallback
 
-from wandb_vec_vid_recorder import WandbVecVideoRecorder
+from utils.wandb_vec_vid_recorder import WandbVecVideoRecorder
 from social_dilemmas.envs.pettingzoo_env import parallel_env
 from config.configuration import Config
 from custom_vec_monitor import CustomVecMonitor
