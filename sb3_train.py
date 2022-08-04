@@ -15,7 +15,7 @@ from utils.env_getter_utils import get_supersuit_parallelized_environment
 from utils.sb3_custom_cnn import CustomCNN
 from utils.wandb_vec_vid_recorder import WandbVecVideoRecorder
 
-SEED = torch.manuel_seed(42)
+SEED = 42
 
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 print("Available device is: ", DEVICE)
@@ -25,7 +25,7 @@ WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
 wandb.login(key=WANDB_API_KEY)
 
 
-def get_algo(env, policy_kwargs, tensorboard_log, args, policy_model="CNNPolicy"):
+def get_algo(env, policy_kwargs, tensorboard_log, args, policy_model="CnnPolicy"):
     if args.algo_name == 'PPO':
         return PPO(
         policy=policy_model,
@@ -86,7 +86,7 @@ def main(args):
                                 )
     # This monitors/ logs the tb_results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
-    env = VecMonitor(env, filename=args.logr_file_path)
+    env = VecMonitor(env, filename=args.log_file_path)
 
     policy_kwargs = dict(
         features_extractor_class=CustomCNN,
