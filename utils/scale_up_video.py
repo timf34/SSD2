@@ -5,7 +5,7 @@ import numpy as np
 
 from typing import List
 
-video_file = r'rl-video-step-0-to-step-200.mp4'
+video_file = r'../videos/rl-video-step-0-to-step-200.mp4'
 
 
 def parse_video_to_frames(video_path: str) -> List[np.ndarray]:
