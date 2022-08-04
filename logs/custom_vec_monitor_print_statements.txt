@@ -1,0 +1,56 @@
+Here are the print statements that I have removed.
+
+# TODO: this all needs to go.
+        # ----------------------------------------------------------------------------------------------------------------------
+        # Shape: (number of agents (=number of agents in env x number of environments), 15, 15, 18)
+        # The latter dimension is 6 (the number of frames being stacked before input to the network) x 3 (the number of channels)
+        # I'll test this in a sec.
+        print("Here are the obs shape: ")
+        print(obs.shape)
+
+        # Sample: [ -28. -327. -378. -442. -175. -381. -327.  -34.  -68. -318.] -> List[int]
+        print("self.episode_returns: ")
+        print(self.episode_returns)
+
+        # [  0.  -1.  -1.   0.   0.   0. -50.   1.   0.  -1.] -> List[int]
+        # -50 means the agent got hit, -1 means they zapped a beam, +1 means they ate an apple.
+        print("\n Here are the rewards: ")
+        print(rewards)
+
+        # Essentially a bool for when the episode is done for each agent
+        # [0 0 0 0 0 0 0 0 0 0] -> List[int] (0 means not done, 1 means done)
+        print("\n Here are the dones: ")
+        print(dones)
+
+        # An empty tuple it seems.
+        print("\n info key words:")
+        print(self.info_keywords)
+
+
+        # [{'terminal_observation': array([[[  0, 255,   0, ...,   0,   0,   0],
+        #         [113,  75,  24, ..., 113,  75,  24],
+        print("\n Here are the infos: ")
+        print(infos)
+
+        # During an episode
+        # {}
+
+        # At the end of an episode
+        # {'r': -292.0, 'l': 1000, 't': 59.348197}
+        print("episode info:")
+        print(episode_info)
+
+
+        # When done is False (during an episode
+        #  [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
+
+        # At the end of an episode (ie when done is True)
+        # [{'terminal_observation': array([[[0, 255, 0, ..., 0, 0, 0],
+        #                                  [113, 75, 24, ..., 113, 75, 24],
+        #                                  [0, 255, 0, ..., 0, 0, 0],
+        #                                  ...,
+        # [  0,   0,   0, ...,   0,   0,   0]]], dtype=uint8), 'episode': {'r': -91.0, 'l': 1000, 't': 59.345771}}, {'terminal_observation': array([[[  0,   0,   0, ...,   0,   0,   0],
+        print("\n Here are the new_infos: ")
+        print(new_infos)
+
+        # ----------------------------------------------------------------------------------------------------------------------
