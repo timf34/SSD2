@@ -15,8 +15,7 @@ from utils.env_getter_utils import get_supersuit_parallelized_environment
 from utils.sb3_custom_cnn import CustomCNN
 from utils.wandb_vec_vid_recorder import WandbVecVideoRecorder
 
-# get a random seed with torch.random.seed()
-SEED = torch.random.seed(42)
+SEED = torch.manuel_seed(42)
 
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 print("Available device is: ", DEVICE)

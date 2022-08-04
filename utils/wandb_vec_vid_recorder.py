@@ -8,7 +8,7 @@ from stable_baselines3.common.vec_env.vec_video_recorder import VecVideoRecorder
 
 
 class WandbVecVideoRecorder(VecVideoRecorder):
-    def __init__(self, venv, directory, record_video_trigger, video_length=200, use_wandb=True):
+    def __init__(self, venv, directory, record_video_trigger, video_length=400, use_wandb=True):
         super(WandbVecVideoRecorder, self).__init__(venv, directory, record_video_trigger, video_length)
         self.use_wandb = use_wandb
 
