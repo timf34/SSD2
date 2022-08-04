@@ -9,7 +9,7 @@ import os
 import psutil
 from signal import SIGINT, signal
 
-from utils import get_supersuit_parallelized_environment, get_parallelized_env
+from utils.env_getter_utils import get_supersuit_parallelized_environment, get_parallelized_env
 
 
 class CompareSupersuitAndPettingzoo:
