@@ -3,7 +3,7 @@ import datetime
 
 import supersuit as ss
 import torch
-from stable_baselines3 import PPO
+from stable_baselines3 import PPO, A2C
 from stable_baselines3.common.vec_env.vec_monitor import VecMonitor
 import wandb
 from wandb.integration.sb3 import WandbCallback
@@ -15,6 +15,8 @@ from utils.env_getter_utils import get_supersuit_parallelized_environment
 from utils.sb3_custom_cnn import CustomCNN
 from utils.wandb_vec_vid_recorder import WandbVecVideoRecorder
 
+# get a random seed with torch.random.seed()
+SEED = torch.random.seed(42)
 
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 print("Available device is: ", DEVICE)
@@ -22,6 +24,46 @@ print("Available device is: ", DEVICE)
 
 WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
 wandb.login(key=WANDB_API_KEY)
+
+
+def get_algo(env, policy_kwargs, tensorboard_log, args, policy_model="CNNPolicy"):
+    if args.algo_name == 'PPO':
+        return PPO(
+        policy=policy_model,
+        env=env,
+        learning_rate=args.lr,
+        n_steps=args.rollout_len,
+        batch_size=args.batch_size, # not this
+        n_epochs=args.n_epochs,
+        gamma=args.gamma,
+        gae_lambda=args.gae_lambda,
+        ent_coef=args.ent_coef,
+        max_grad_norm=args.grad_clip,
+        target_kl=args.target_kl,
+        policy_kwargs=policy_kwargs,
+        tensorboard_log=tensorboard_log,
+        verbose=args.verbose,
+        seed=SEED,
+        device=DEVICE,
+    )
+    elif args.algo_name == 'A2C':
+        return A2C(
+        policy=policy_model,
+        env=env,
+        learning_rate=args.lr,
+        n_steps=args.rollout_len,
+        gamma=args.gamma,
+        gae_lambda=args.gae_lambda,
+        ent_coef=args.ent_coef,
+        max_grad_norm=args.grad_clip,
+        policy_kwargs=policy_kwargs,
+        tensorboard_log=tensorboard_log,
+        verbose=args.verbose,
+        seed=SEED,
+        device=DEVICE
+    )
+    else:
+        raise ValueError(f"Unknown algo name: {args.algo_name}")
 
 
 def main(args):
@@ -57,23 +99,7 @@ def main(args):
 
     tensorboard_log = f"./logs/tb_results/sb3/{args.env_name}_ppo_paramsharing"
 
-    model = PPO(
-        "CnnPolicy",
-        env=env,
-        learning_rate=args.lr,
-        n_steps=args.rollout_len,
-        batch_size=args.batch_size,
-        n_epochs=args.n_epochs,
-        gamma=args.gamma,
-        gae_lambda=args.gae_lambda,
-        ent_coef=args.ent_coef,
-        max_grad_norm=args.grad_clip,
-        target_kl=args.target_kl,
-        policy_kwargs=policy_kwargs,
-        tensorboard_log=tensorboard_log,
-        verbose=args.verbose,
-        device=DEVICE
-    )
+    model = get_algo(env=env, policy_kwargs=policy_kwargs, tensorboard_log=tensorboard_log, args=args)
     model.learn(
         total_timesteps=args.total_timesteps,
         callback=WandbCallback(
