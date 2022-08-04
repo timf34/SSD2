@@ -170,7 +170,7 @@ class MapEnv(ParallelEnv):
         obs_space = Dict(obs_space)
         # Change dtype so that ray can put all observations into one flat batch
         # with the correct dtype.
-        # See DictFlatteningPreprocessor in ray/rllib/models/preprocessors.py.
+        # See DictFlatteningPreprocessor in ray/rllib/saved_model_logs/preprocessors.py.
         obs_space.dtype = np.uint8
         return obs_space
 

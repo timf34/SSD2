@@ -1,2 +1,2 @@
 *.mp4
-models/
+logs/saved_model_logs/
