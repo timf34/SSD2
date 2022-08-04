@@ -15,7 +15,7 @@ from wandb.integration.sb3 import WandbCallback
 from utils.wandb_vec_vid_recorder import WandbVecVideoRecorder
 from social_dilemmas.envs.pettingzoo_env import parallel_env
 from config.configuration import Config
-from custom_vec_monitor import CustomVecMonitor
+from utils.custom_vec_monitor import CustomVecMonitor
 from utils.env_getter_utils import get_supersuit_parallelized_environment
 
 
