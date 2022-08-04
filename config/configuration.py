@@ -45,7 +45,7 @@ class Config:
     #  create logs in a random dir.
     #  And I can't use absolute paths as we have to consider Colab... not sure if this is the most robust design choice.
     #  We will move on for now but I'll come back to this.
-    log_dir: str = "./logs/vec_monitor_logs_Testomg/"
+    log_dir: str = "./logs/vec_monitor_logs/"
     vid_dir: str = "./logs/vec_videos/"
 
     def __post_init__(self):
