@@ -1,11 +1,13 @@
 from dataclasses import dataclass, field, asdict
 from typing import Tuple
+import os
 import time
 
 
 
 @dataclass
 class Config:
+
     # Parser args
     env_name: str = "harvest" # Choices: ["harvest", "cleanup"]
     num_agents: int = 1
@@ -33,20 +35,33 @@ class Config:
     verbose: int = 3
 
     # Wandb args
-    wandb_mode = 'online' # Can be 'online', 'offline', or 'disabled'
+    wandb_mode = 'disabled' # Can be 'online', 'offline', or 'disabled'
     use_wandb: bool = True
     save_vid_every_n_steps: int = 10000
-
     vec_video_rollout_legnth: int = 1000 # How many steps to save to the video (default is 200, and total episode would be 1000)
 
+    # Paths
+    # TODO: note that this has to be run by a file from the home directory for it to work properly (otherwise it will
+    #  create logs in a random dir.
+    #  And I can't use absolute paths as we have to consider Colab... not sure if this is the most robust design choice.
+    #  We will move on for now but I'll come back to this.
+    log_dir: str = "./logs/vec_monitor_logs_Testomg/"
+    vid_dir: str = "./logs/vec_videos/"
+
     def __post_init__(self):
-        self.wandb_experiment_name: str = f"PPO_ONE_AGENT_HARVEST_{time.strftime('%d_%m_%Y_%H%M%S')}"
+        self.wandb_experiment_name: str = f"PPO_{self.env_name}_{self.num_agents}_AGENT(S)_{time.strftime('%d_%m_%Y_%H_%M_%S')}"
+        self.datetime_filename = time.strftime('%d_%m_%Y_%H_%M_%S')
+        os.makedirs(self.log_dir, exist_ok=True)
+        self.log_file_path = os.path.join(self.log_dir, f"{self.datetime_filename}")
+        self.video_file_path = os.path.join(self.vid_dir, f"{self.datetime_filename}")
 
 
 def test_config():
     print(Config)
     conf = Config()
-    print(conf)
+    # print(conf)
+    for i in asdict(conf).keys():
+        print(f"{i}: {getattr(conf, i)}")
 
 
 if __name__ == '__main__':

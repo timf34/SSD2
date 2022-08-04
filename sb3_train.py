@@ -16,21 +16,12 @@ from utils.sb3_custom_cnn import CustomCNN
 from utils.wandb_vec_vid_recorder import WandbVecVideoRecorder
 
 
-
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 print("Available device is: ", DEVICE)
 
 
 WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
 wandb.login(key=WANDB_API_KEY)
-
-# Directory for VecMonitor
-LOG_DIR = "./logs/vec_monitor_logs/"
-VIDEO_DIR = "./logs/vec_videos/"
-datetime_filename = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-os.makedirs(LOG_DIR, exist_ok=True)
-log_file_path = os.path.join(LOG_DIR, f"{datetime_filename}")
-video_file_path = os.path.join(VIDEO_DIR, f"{datetime_filename}")
 
 
 def main(args):
@@ -47,14 +38,14 @@ def main(args):
 
     env = get_supersuit_parallelized_environment(args)
     env = WandbVecVideoRecorder(env,
-                                video_file_path,
+                                args.video_file_path,
                                 record_video_trigger=lambda x: x % args.save_vid_every_n_steps == 0,
                                 video_length=args.vec_video_rollout_legnth,
                                 use_wandb=args.use_wandb,
                                 )
     # This monitors/ logs the tb_results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
-    env = VecMonitor(env, filename=log_file_path)
+    env = VecMonitor(env, filename=args.log_file_path)
 
     policy_kwargs = dict(
         features_extractor_class=CustomCNN,
@@ -128,7 +119,7 @@ def test_(args):
         env, num_vec_envs=args.num_envs, num_cpus=args.num_cpus, base_class="stable_baselines3"
     )
     env = WandbVecVideoRecorder(env,
-                                video_file_path,
+                                args.video_file_path,
                                 record_video_trigger=lambda x: x % args.save_vid_every_n_steps == 0,
                                 video_length=args.vec_video_rollout_legnth,
                                 use_wandb=args.use_wandb,
