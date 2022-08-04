@@ -27,8 +27,8 @@ WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
 wandb.login(key=WANDB_API_KEY)
 
 # Directory for VecMonitor
-LOG_DIR = "./vec_monitor_logs/"
-VIDEO_DIR = "./vec_videos/"
+LOG_DIR = "./logs/vec_monitor_logs/"
+VIDEO_DIR = "./logs/vec_videos/"
 datetime_filename = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 os.makedirs(LOG_DIR, exist_ok=True)
 log_file_path = os.path.join(LOG_DIR, f"{datetime_filename}")
@@ -109,7 +109,7 @@ def main(args):
                                 use_wandb=args.use_wandb,
                                 )
     print("We made it")
-    # This monitors/ logs the results of our vectorized environment; we need to pass a filename/ directory to save to
+    # This monitors/ logs the tb_results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
     env = VecMonitor(env, filename=log_file_path)
 
@@ -121,7 +121,7 @@ def main(args):
         net_arch=[args.features_dim],
     )
 
-    tensorboard_log = "./results/sb3/cleanup_ppo_paramsharing"
+    tensorboard_log = f"./logs/tb_results/sb3/{args.env_name}_ppo_paramsharing"
 
     model = PPO(
         "CnnPolicy",
@@ -192,7 +192,7 @@ def test_(args):
                                 number_agents=args.num_agents,
                                 )
     print("We made it")
-    # This monitors/ logs the results of our vectorized environment; we need to pass a filename/ directory to save to
+    # This monitors/ logs the tb_results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
     env = CustomVecMonitor(env, filename=log_file_path)
     env.print_venv_attributes()
