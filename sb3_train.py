@@ -17,6 +17,7 @@ from wandb_vec_vid_recorder import WandbVecVideoRecorder
 from social_dilemmas.envs.pettingzoo_env import parallel_env
 from config.configuration import Config
 from custom_vec_monitor import CustomVecMonitor
+from utils.env_getter_utils import get_supersuit_parallelized_environment
 
 
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -42,7 +43,6 @@ class CustomCNN(BaseFeaturesExtractor):
     :param features_dim: (int) Number of features extracted.
         This corresponds to the number of unit for the last layer.
     """
-
     def __init__(
         self,
         observation_space: gym.spaces.Box,
@@ -74,6 +74,7 @@ class CustomCNN(BaseFeaturesExtractor):
         features = F.relu(self.fc2(features))
         return features
 
+
 def main(args):
 
     wandb.init(
@@ -86,29 +87,13 @@ def main(args):
         # monitor_gym=True,
     )
 
-    env = parallel_env(
-        max_cycles=args.rollout_len,
-        env=args.env_name,
-        num_agents=args.num_agents,
-        use_collective_reward=args.use_collective_reward,
-        inequity_averse_reward=args.inequity_averse_reward,
-        alpha=args.alpha,
-        beta=args.beta,
-    )
-
-    env = ss.observation_lambda_v0(env, lambda x, _: x["curr_obs"], lambda s: s["curr_obs"])
-    env = ss.frame_stack_v1(env, args.num_frames)
-    env = ss.pettingzoo_env_to_vec_env_v1(env)
-    env = ss.concat_vec_envs_v1(
-        env, num_vec_envs=args.num_envs, num_cpus=args.num_cpus, base_class="stable_baselines3"
-    )
+    env = get_supersuit_parallelized_environment(args)
     env = WandbVecVideoRecorder(env,
                                 video_file_path,
                                 record_video_trigger=lambda x: x % args.save_vid_every_n_steps == 0,
                                 video_length=args.vec_video_rollout_legnth,
                                 use_wandb=args.use_wandb,
                                 )
-    print("We made it")
     # This monitors/ logs the tb_results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
     env = VecMonitor(env, filename=log_file_path)
