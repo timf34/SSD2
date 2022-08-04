@@ -33,7 +33,7 @@ class Config:
     verbose: int = 3
 
     # Wandb args
-    wandb_mode = 'disabled' # Can be 'online', 'offline', or 'disabled'
+    wandb_mode = 'online' # Can be 'online', 'offline', or 'disabled'
     use_wandb: bool = True
     save_vid_every_n_steps: int = 10000
 
