@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from visualization.rollout import Controller
+from utils.rollout import Controller
 
 
 class TestRollout(unittest.TestCase):

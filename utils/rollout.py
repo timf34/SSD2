@@ -1,5 +1,10 @@
 """Defines a multi-agent controller to rollout environment episodes w/
-   agent policies."""
+   agent policies.
+
+   Note that this is inherited from the old codebase, and generally just not as useful here.
+   It's worth keeping for posterity, though... primarily in case I ever change the envs, this is useful for visualizing
+   the rollouts easily.
+   """
 
 import argparse
 import os
@@ -8,7 +13,7 @@ import sys
 
 import numpy as np
 
-import utility_funcs
+from utils import utility_funcs
 from social_dilemmas.config.default_args import add_default_args
 from social_dilemmas.envs.cleanup import CleanupEnv
 from social_dilemmas.envs.harvest import HarvestEnv
@@ -114,4 +119,4 @@ if __name__ == "__main__":
     add_default_args(parser)
     args = parser.parse_args()
     c = Controller(args)
-    c.render_rollout(path="rollout", horizon=100, render_type="pretty", fps=1)
+    c.render_rollout(path="../visualization/rollout", horizon=100, render_type="pretty", fps=1)

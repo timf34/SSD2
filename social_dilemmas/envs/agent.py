@@ -2,7 +2,7 @@
 
 import numpy as np
 
-import utility_funcs as util
+from utils import utility_funcs as util
 
 # basic moves every agent should do
 BASE_ACTIONS = {
