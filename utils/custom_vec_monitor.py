@@ -1,8 +1,10 @@
+import time
+from typing import Optional, Tuple, Dict, List
 from stable_baselines3.common.vec_env.vec_monitor import VecMonitor
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvStepReturn, VecEnv
 
-from typing import Optional, Tuple, Dict, List
-import time
+from utils.env_getter_utils import get_supersuit_parallelized_environment
+from config.configuration import Config
 
 
 agent_dict = {"indivudal_rewards": [], "beam_fired": [], "beam_hit": [], "apples_consumed": []}
@@ -24,7 +26,6 @@ class CustomVecMonitor(VecMonitor):
                 agent_id = f"agent-{str(i)}"
                 pass
                 # self.agents
-
 
 
     def print_venv_attributes(self):
@@ -125,3 +126,18 @@ def test_taking_metrics():
     Using inputs such as we have above.
     :return:
     """
+
+    pass
+
+def test_vec_monitor():
+    """
+    We will just use this to test that we are taking metrics, etc. properly.
+    Using inputs such as we have above.
+    :return:
+    """
+    args = Config()
+    env = get_supersuit_parallelized_environment()
+    env = CustomVecMonitor(env, filename=args.log_file_path)
+
+if __name__ == '__main__':
+    pass
