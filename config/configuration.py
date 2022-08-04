@@ -10,6 +10,7 @@ class Config:
 
     # Parser args
     env_name: str = "harvest" # Choices: ["harvest", "cleanup"]
+    algo_name: str = "A2C"
     num_agents: int = 1
     rollout_len: int = 1000
     total_timesteps: int = 2e8
@@ -35,7 +36,7 @@ class Config:
     verbose: int = 3
 
     # Wandb args
-    wandb_mode = 'disabled' # Can be 'online', 'offline', or 'disabled'
+    wandb_mode = 'online' # Can be 'online', 'offline', or 'disabled'
     use_wandb: bool = True
     save_vid_every_n_steps: int = 10000
     vec_video_rollout_legnth: int = 1000 # How many steps to save to the video (default is 200, and total episode would be 1000)
@@ -49,7 +50,7 @@ class Config:
     vid_dir: str = "./logs/vec_videos/"
 
     def __post_init__(self):
-        self.wandb_experiment_name: str = f"PPO_{self.env_name}_{self.num_agents}_AGENT(S)_{time.strftime('%d_%m_%Y_%H_%M_%S')}"
+        self.wandb_experiment_name: str = f"{self.algo_name}_{self.env_name}_{self.num_agents}_AGENT(S)_{time.strftime('%d_%m_%Y_%H_%M_%S')}"
         self.datetime_filename = time.strftime('%d_%m_%Y_%H_%M_%S')
         os.makedirs(self.log_dir, exist_ok=True)
         self.log_file_path = os.path.join(self.log_dir, f"{self.datetime_filename}")
