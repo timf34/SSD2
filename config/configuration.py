@@ -38,7 +38,7 @@ class Config:
     # Wandb args
     wandb_mode = 'online' # Can be 'online', 'offline', or 'disabled'
     use_wandb: bool = True
-    save_vid_every_n_steps: int = 10000
+    save_vid_every_n_steps: int = 50000
     vec_video_rollout_legnth: int = 1000 # How many steps to save to the video (default is 200, and total episode would be 1000)
 
     # Paths
