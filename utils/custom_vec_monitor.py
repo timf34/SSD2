@@ -85,6 +85,7 @@ def pseudo_step(rewards, dones, step_size=5) -> None:
     print(rewards)  # TODO: why don't the rewards match the individual agent rewards.
     for i in range(5):
         agent_id = f"agent-{str(i)}"
+
         agents[agent_id] = agent_dict
 
     for i in range(step_size):
