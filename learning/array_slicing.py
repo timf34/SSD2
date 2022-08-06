@@ -10,6 +10,7 @@ for i in range(step_size):
         # print the value
         print(sample_array[j])
 
+print("sai dude")
 # Now I want to loop through the array again, with a step size of 5, but to visit each element using slicing
 # This is the one:)
 for i in range(step_size):

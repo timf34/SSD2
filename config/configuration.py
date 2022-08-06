@@ -11,18 +11,18 @@ class Config:
     # Parser args
     env_name: str = "harvest" # Choices: ["harvest", "cleanup"]
     algo_name: str = "A2C"
-    num_agents: int = 5
+    num_agents: int = 1
     rollout_len: int = 1000
     total_timesteps: int = 1e8
     use_collective_reward: bool = False # Give each agent the collective reward across all agents
     inequity_averse_reward: bool = False # Use inequity averse rewards from 'Inequity aversion...' paper
     alpha: float = 5
     beta: float = 0.05
-
+    # TODO: I should comment the figures I typically use for diff things here!
     # Args from def main():
-    num_cpus: int = 12
-    num_envs: int = 10  # Number of parallel multi-agent environments
-    num_frames: int = 16  # Number of frames to stack together for input to the network; use >4 to avoid automatic VecTransposeImage
+    num_cpus: int = 6
+    num_envs: int = 6  # Number of parallel multi-agent environments
+    num_frames: int = 6  # Number of frames to stack together for input to the network; use >4 to avoid automatic VecTransposeImage
     features_dim: int= 128  # output layer of cnn extractor AND shared layer for policy and value functions
     fcnet_hiddens: Tuple[int, int] = (1024, 128)  # Two hidden layers for cnn extractor
     ent_coef: int = 0.001  # entropy coefficient in loss
@@ -38,7 +38,7 @@ class Config:
     # Wandb args
     wandb_mode = 'online' # Can be 'online', 'offline', or 'disabled'
     use_wandb: bool = True
-    save_vid_every_n_steps: int = 50000
+    save_vid_every_n_steps: int = 500
     vec_video_rollout_legnth: int = 1000 # How many steps to save to the video (default is 200, and total episode would be 1000)
 
     # Paths
