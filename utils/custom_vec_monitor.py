@@ -82,6 +82,7 @@ class CustomVecMonitor(VecMonitor):
 
 def pseudo_step(rewards, dones, step_size=5) -> None:
     agents = {}
+    print(rewards)  # TODO: why don't the rewards match the individual agent rewards.
     for i in range(5):
         agent_id = f"agent-{str(i)}"
         agents[agent_id] = agent_dict
@@ -90,15 +91,17 @@ def pseudo_step(rewards, dones, step_size=5) -> None:
         for j in range(i, len(dones), step_size):
             print(f"{i} {j}")
             print(f"{rewards[j]} {dones[j]}")
-            agent_id = f"agent-{j % 5}"
+            agent_id = f"agent-{str(i)}"
             if dones[j]:
+                print(agent_id)
                 print(agents[agent_id])
 
                 # Individual agent metrics.
                 # Note that this wouldn't include metrics from the last step!
                 # agent_id = j % 5
-                agent_id = i
-                agents[f"{str(agent_id)}"]["indivudal_rewards"] += [rewards[i]]
+                print(rewards)
+                print("agents[agent_id]", agents[agent_id])
+                agents[f"{agent_id}"]["indivudal_rewards"] += [rewards[i]]
                 if rewards[i] == -1:
                     agents[f"{str(agent_id)}"]["beam_fired"] += [1]
                 elif rewards[i] == 1:
@@ -112,6 +115,7 @@ def pseudo_step(rewards, dones, step_size=5) -> None:
         for key, value in _agent_dict.items():
             print(f"{key}: {value}")
 
+    print(agents)
 
 def test_taking_metrics():
     """
