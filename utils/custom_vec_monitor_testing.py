@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Dict
 
 single_agent_reward = [1.]
 single_agent_rewards = [0, 1., -1., 50., 0]
 multi_agent_reward = [0., -1.,  1.,  0., -1.,  0.,  -50., -1., 0, 0]
-dones = [1 for i in range(10)]
+dones = [1 for _ in range(10)]
 
 agent_dict = {"indivudal_rewards": [], "beam_fired": [], "beam_hit": [], "apples_consumed": []}
 
@@ -24,23 +24,48 @@ class Agent:
         return getattr(self, key)
 
 
-def create_agents(num_agents) -> dict:
+def create_agents(num_agents) -> Dict[str, Agent]:
     agents = {}
     for i in range(num_agents):
         agent_id = f"agent-{str(i)}"
         agents[agent_id] = Agent(agent_id)
 
-    print(agents)
-    print(agents["agent-0"])
-    agents["agent-0"].beam_fired = [1]
-    print(agents)
-    print(agents["agent-0"]['beam_fired'])
+    # print(agents)
+    # print(agents["agent-0"])
+    # agents["agent-0"].beam_fired = [1]
+    # print(agents)
+    # print(agents["agent-0"]['beam_fired'])
 
     return agents
 
 
-def psuedo_step(rewards, dones, step_size):
+def psuedo_step(rewards, dones, step_size=5):
     agents = create_agents(5)
+    print("Here are the rewards:", rewards)
+
+    for i in range(step_size):
+
+        for j in range(i, len(dones), step_size):
+            print(f"i: {i} - rewards[i]: {rewards[j]} - j: {j} - dones[j]: {dones[j]}")
+            agent_id = f"agent-{str(i)}" # Probably change this for the real thing - make it a pure int as a key instead of needing to recreate it as a string
+
+            if dones[j]:
+                # Individual agent metrics.
+                # Note that this wouldn't include metrics from the last step!
+                # agent_id = j % 5
+                agents[f"{agent_id}"]["individual_rewards"] += [rewards[j]]
+                if rewards[j] == -1:
+                    agents[f"{str(agent_id)}"]["beam_fired"] += [1]
+                elif rewards[j] == 1:
+                    agents[f"{str(agent_id)}"]["apples_consumed"] += [1]
+                elif rewards[j] == -50:
+                    agents[f"{str(agent_id)}"]["beam_hit"] += [1]
+
+    # print the agents dict
+    for agent_id, agent_object in agents.items():
+        print(f"\nAgent {agent_object.__dict__}")
+
+    print(agents)
 
 
 if __name__ == '__main__':
