@@ -22,3 +22,8 @@ sample_rewards = [0., -1.,  1.,  0., -1.,  0.,  -50., -1., 0, 0]
 for i in range(step_size):
     print(sample_rewards[i::step_size])
 
+
+array_to_sum = [1., -50]
+# Some this array
+print(sum(array_to_sum))
+
