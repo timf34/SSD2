@@ -102,7 +102,7 @@ def main(args):
     model.learn(
         total_timesteps=args.total_timesteps,
         callback=WandbCallback(
-            gradient_save_freq=1000,
+            gradient_save_freq=1000, # TODO: I can probs get rid of this!
             model_save_freq=1000,
             model_save_path=f"logs/saved_model_logs/{args.wandb_experiment_name}",
             verbose=2
