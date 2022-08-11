@@ -1,4 +1,10 @@
 from typing import List, Dict
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from stable_baselines3.common import results_plotter
+from stable_baselines3.common.results_plotter import load_results, ts2xy, plot_results
+
 
 single_agent_reward = [1.]
 single_agent_rewards = [0, 1., -1., 50., 0]
@@ -67,5 +73,22 @@ def psuedo_step(rewards, dones, step_size=5):
     print(agents)
 
 
+def testing_ts2xy():
+    log_dir = "./logs/vec_monitor_logs"
+    results = load_results(log_dir)
+    print(results)
+    x, y = ts2xy(results, 'episodes')
+    print("x", x)
+    print("y", y)
+    timesteps = 1e5
+    plot_results([log_dir], timesteps, results_plotter.X_TIMESTEPS, "TD3 LunarLander")
+    # plt.show()
+    print("my own stuff")
+    print(results.x.values[-18:]) # Now all I need to do is use the # agents x # envs to get the right number of rows
+    print("type of results.x.values", type(results.x.values))
+
+
 if __name__ == '__main__':
-    psuedo_step(multi_agent_reward, dones, step_size=5)
+    # psuedo_step(multi_agent_reward, dones, step_size=5)
+    testing_ts2xy()
+

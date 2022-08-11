@@ -3,9 +3,11 @@ import sys
 import wandb
 from typing import Optional, Tuple, Dict, List
 from stable_baselines3.common.vec_env.vec_monitor import VecMonitor
+from stable_baselines3.common.results_plotter import load_results, ts2xy, plot_results
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvStepReturn, VecEnv
 from wandb.integration.sb3 import WandbCallback
 from stable_baselines3 import PPO
+import pandas as pd
 
 from utils.sb3_custom_cnn import CustomCNN
 from utils.env_getter_utils import get_supersuit_parallelized_environment
@@ -77,7 +79,6 @@ class CustomVecMonitor(VecMonitor):
         for key, value in self.venv.env.venv.__dict__.items():
             print(f"{key}: {value}")
 
-
     def step_wait(self) -> VecEnvStepReturn:
         # TODO: note that everything done here is done every step!
         obs, rewards, dones, infos = self.venv.step_wait()
@@ -93,7 +94,6 @@ class CustomVecMonitor(VecMonitor):
                     episode_return = self.episode_returns[j]
                     episode_length = self.episode_lengths[j]
                     episode_info = {"r": episode_return, "l": episode_length, "t": round(time.time() - self.t_start, 6), "x": 5}
-                    # episode_info = {"r": episode_return, "l": episode_length, "t": round(time.time() - self.t_start, 6)}
 
                     # for key in self.info_keywords:
                     #     # This was throwing an error here, as this was expecting the key to be in the info_keywords and
@@ -173,6 +173,9 @@ def lets_tests_taking_metrics() -> None:
 
 class CustomCallback(WandbCallback):
     def __init__( self,
+        num_agents: int,
+        num_envs: int,
+        log_dir: str = "./logs/vec_monitor_logs",
         verbose: int = 0,
         model_save_path: Optional[str] = None,
         model_save_freq: int = 0,
@@ -180,12 +183,20 @@ class CustomCallback(WandbCallback):
         log: Optional[Literal["gradients", "parameters", "all"]] = "all",
     ) -> None:
         super(CustomCallback, self).__init__(verbose, model_save_path, model_save_freq, gradient_save_freq, log)
+        self.log_dir = log_dir
+        self.num_rows = num_agents * num_envs
 
     def _on_step(self) -> bool:
-
         # My code:
         value: int = 5
         self.logger.record('random_value', value)
+
+        # TODO: do note that this gets galled every single step, and not just at the end of each episode.
+        results = load_results(self.log_dir)
+        if not results.empty:
+            print("Here are the last num agents x num envs results:")
+            print(results.x.values[-(self.num_rows):])
+            self.logger.record('last_results', results.x.values[-(self.num_rows):])
 
         # Wandb code: https://github.com/wandb/wandb/blob/584e2efeeaf9f894b4f0984a40c61efa9b6e3104/wandb/integration/sb3/sb3.py#L134
         if self.model_save_freq > 0:
@@ -205,7 +216,6 @@ def lets_tests_vec_monitor(train=True):
     env = CustomVecMonitor(env, filename=args.log_file_path, info_keywords=("x",))
     # env = CustomVecMonitor(env, filename=args.log_file_path)
 
-
     if train:
         tensorboard_log = f"./logs/tb_results/sb3/{args.env_name}_ppo_paramsharing"
 
@@ -220,12 +230,15 @@ def lets_tests_vec_monitor(train=True):
             n_epochs=args.n_epochs, gamma=args.gamma, gae_lambda=args.gae_lambda, ent_coef=args.ent_coef,
             max_grad_norm=args.grad_clip, target_kl=args.target_kl, policy_kwargs=policy_kwargs,
             tensorboard_log=tensorboard_log, verbose=args.verbose, device='cuda'
-        ).learn(total_timesteps=100000,
-                callback=CustomCallback(
-                    verbose=2,
-                    model_save_path=f"logs/saved_model_logs/testing",
-                    model_save_freq=1000,
-                    gradient_save_freq=1000,  # TODO: I can probs get rid of this!
+        ).learn(
+            total_timesteps=100000,
+            callback=CustomCallback(
+                num_agents=args.num_agents,
+                num_envs=args.num_envs,
+                verbose=2,
+                model_save_path=f"logs/saved_model_logs/testing",
+                model_save_freq=1000,
+                gradient_save_freq=1000,  # TODO: I can probs get rid of this!
                 ))
 
 
