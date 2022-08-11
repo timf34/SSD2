@@ -35,7 +35,7 @@ class CustomVecMonitor(VecMonitor):
                  info_keywords: Tuple[str, ...] = (),
                  number_agents: int = 5,
                  ):
-        super().__init__(venv, filename, info_keywords)
+        super().__init__(venv, filename, info_keywords=info_keywords)
         self.per_agent_returns: Dict[int, List[int]] = {}
         self.number_agents = number_agents
         self.agents: Dict[str, Dict[str, List[int]]] = {}
@@ -60,41 +60,48 @@ class CustomVecMonitor(VecMonitor):
         for key, value in self.venv.env.venv.__dict__.items():
             print(f"{key}: {value}")
 
-    def step_wait(self) -> VecEnvStepReturn:
 
+    def step_wait(self) -> VecEnvStepReturn:
         # TODO: note that everything done here is done every step!
         obs, rewards, dones, infos = self.venv.step_wait()
         self.episode_returns += rewards
         self.episode_lengths += 1
         new_infos = list(infos[:])
-        episode_info = {}
-        for i in range(len(dones)):
-            if dones[i]:
-                # TODO: note that everything done here is done only at the end of an episode!
-                info = infos[i].copy()
-                episode_return = self.episode_returns[i]
-                episode_length = self.episode_lengths[i]
-                episode_info = {"r": episode_return, "l": episode_length, "t": round(time.time() - self.t_start, 6)}
-                for key in self.info_keywords:
-                    episode_info[key] = info[key]
-                info["episode"] = episode_info
-                self.episode_count += 1
-                self.episode_returns[i] = 0
-                self.episode_lengths[i] = 0
-                if self.results_writer:
-                    self.results_writer.write_row(episode_info)
-                new_infos[i] = info
-            else:
-                # Individual agent metrics.
-                # TODO: Note that this wouldn't include metrics from the last step!
-                agent_id = i % self.number_agents
-                self.agents[f"agent-{str(agent_id)}"]["indivudal_rewards"] += [rewards[i]]
-                if rewards[i] == -1:
-                    self.agents[f"agent-{str(agent_id)}"]["beam_fired"] += 1
-                elif rewards[i] == 1:
-                    self.agents[f"agent-{str(agent_id)}"]["apples_consumed"] += 1
-                elif rewards[i] == -50:
-                    self.agents[f"agent-{str(agent_id)}"]["beam_hit"] += 1
+        # episode_info = {}
+        for i in range(self.number_agents):
+            for j in range(i, len(dones), self.number_agents):
+                if dones[i]:
+                    # TODO: note that everything done here is done only at the end of an episode!
+                    info = infos[i].copy()
+                    episode_return = self.episode_returns[j]
+                    episode_length = self.episode_lengths[j]
+                    episode_info = {"r": episode_return, "l": episode_length, "t": round(time.time() - self.t_start, 6), "x": 0}
+                    # episode_info = {"r": episode_return, "l": episode_length, "t": round(time.time() - self.t_start, 6)}
+
+                    # for key in self.info_keywords:
+                    #     # This was throwing an error here, as this was expecting the key to be in the info_keywords and
+                    #     # in the info dict (which is returned directly from env.step_wait()
+                    #     episode_info[key] = info[key]
+                    #     pass
+
+                    info["episode"] = episode_info
+                    self.episode_count += 1
+                    self.episode_returns[i] = 0
+                    self.episode_lengths[i] = 0
+                    if self.results_writer:
+                        self.results_writer.write_row(episode_info)
+                    new_infos[i] = info
+                else:
+                    # Individual agent metrics.
+                    # TODO: Note that this wouldn't include metrics from the last step!
+                    agent_id = f"agent-{str(i)}"
+                    self.agents[agent_id]["individual_rewards"] += [rewards[j]]
+                    if rewards[i] == -1:
+                        self.agents[agent_id]["beam_fired"] += [1]
+                    elif rewards[i] == 1:
+                        self.agents[agent_id]["apples_consumed"] += [1]
+                    elif rewards[i] == -50:
+                        self.agents[f"{str(agent_id)}"]["beam_hit"] += [1]
 
         return obs, rewards, dones, new_infos
 
@@ -119,8 +126,9 @@ def pseudo_step(rewards, dones, step_size=5) -> None:
                 # agent_id = j % 5
                 print(rewards)
                 print("agents[agent_id]", agents[agent_id])
-                agents[f"{agent_id}"]["individual_rewards"] += [rewards[i]]
+                agents[f"{agent_id}"]["individual_rewards"] += [rewards[j]]
                 if rewards[i] == -1:
+                    print(agents[agent_id])
                     agents[f"{str(agent_id)}"]["beam_fired"] += [1]
                 elif rewards[i] == 1:
                     agents[f"{str(agent_id)}"]["apples_consumed"] += [1]
@@ -135,15 +143,14 @@ def pseudo_step(rewards, dones, step_size=5) -> None:
     print(agents)
 
 
-def lets_tests_taking_metrics():
+def lets_tests_taking_metrics() -> None:
     """
     We will just use this to test that we are taking metrics, etc. properly.
     Using inputs such as we have above.
     :return:
     """
-    sample_rewards = [0., -1.,  1.,  0., -1.,  0.,  -50., -1., 0, 0]
-    dones = [1 for i in range(10)]
-
+    sample_rewards = [0.0, -1.0, 1.0, 0.0, -1.0, 0.0, -50.0, -1.0, 0, 0]
+    dones = [1 for _ in range(10)]
     pseudo_step(sample_rewards, dones)
 
 
@@ -154,8 +161,9 @@ def lets_tests_vec_monitor(train=True):
     """
     args = Config()
     env = get_supersuit_parallelized_environment(args)
-    env = CustomVecMonitor(env, filename=args.log_file_path)
-    env.print_venv_attributes()
+    env = CustomVecMonitor(env, filename=args.log_file_path, info_keywords=("x",))
+    # env = CustomVecMonitor(env, filename=args.log_file_path)
+
 
     if train:
         tensorboard_log = f"./logs/tb_results/sb3/{args.env_name}_ppo_paramsharing"
@@ -171,9 +179,10 @@ def lets_tests_vec_monitor(train=True):
             n_epochs=args.n_epochs, gamma=args.gamma, gae_lambda=args.gae_lambda, ent_coef=args.ent_coef,
             max_grad_norm=args.grad_clip, target_kl=args.target_kl, policy_kwargs=policy_kwargs,
             tensorboard_log=tensorboard_log, verbose=args.verbose, device='cuda'
-        ).learn(total_timesteps=args.total_timesteps)
+        ).learn(total_timesteps=20000)
 
 
 if __name__ == '__main__':
     # test_vec_monitor()
-    lets_tests_taking_metrics()
+    # lets_tests_taking_metrics()
+    lets_tests_vec_monitor()
