@@ -14,6 +14,7 @@ from utils.custom_vec_monitor import CustomVecMonitor
 from utils.env_getter_utils import get_supersuit_parallelized_environment
 from utils.sb3_custom_cnn import CustomCNN
 from utils.wandb_vec_vid_recorder import WandbVecVideoRecorder
+from utils.custom_vec_monitor import CustomVecMonitor, CustomCallback
 
 SEED = 42
 
@@ -86,7 +87,7 @@ def main(args):
                                 )
     # This monitors/ logs the tb_results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
-    env = VecMonitor(env, filename=args.log_file_path)
+    env = CustomVecMonitor(env, filename=args.log_file_path, info_keywords=("x",))
 
     policy_kwargs = dict(
         features_extractor_class=CustomCNN,
@@ -96,12 +97,12 @@ def main(args):
         net_arch=[args.features_dim],
     )
 
-    tensorboard_log = f"./logs/tb_results/sb3/{args.env_name}_ppo_paramsharing"
+    tensorboard_log = f"./logs/tb_results/sb3/{args.env_name}_{args.algo_name}_paramsharing"
 
     model = get_algo(env=env, policy_kwargs=policy_kwargs, tensorboard_log=tensorboard_log, args=args)
     model.learn(
-        total_timesteps=args.total_timesteps,
-        callback=WandbCallback(
+        total_timesteps=20000,
+        callback=CustomCallback(
             gradient_save_freq=1000, # TODO: I can probs get rid of this!
             model_save_freq=1000,
             model_save_path=f"logs/saved_model_logs/{args.wandb_experiment_name}",
