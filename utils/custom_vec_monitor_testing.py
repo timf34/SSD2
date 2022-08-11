@@ -44,7 +44,6 @@ def psuedo_step(rewards, dones, step_size=5):
     print("Here are the rewards:", rewards)
 
     for i in range(step_size):
-
         for j in range(i, len(dones), step_size):
             print(f"i: {i} - rewards[i]: {rewards[j]} - j: {j} - dones[j]: {dones[j]}")
             agent_id = f"agent-{str(i)}" # Probably change this for the real thing - make it a pure int as a key instead of needing to recreate it as a string
