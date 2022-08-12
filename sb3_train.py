@@ -87,7 +87,7 @@ def main(args):
                                 )
     # This monitors/ logs the tb_results of our vectorized environment; we need to pass a filename/ directory to save to
     # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_monitor.py
-    env = CustomVecMonitor(env, filename=args.log_file_path, info_keywords=("x",))
+    env = CustomVecMonitor(env, number_agents=args.num_agents, filename=args.log_file_path, info_keywords=("x",))
 
     policy_kwargs = dict(
         features_extractor_class=CustomCNN,
@@ -101,8 +101,8 @@ def main(args):
 
     model = get_algo(env=env, policy_kwargs=policy_kwargs, tensorboard_log=tensorboard_log, args=args)
     model.learn(
-        total_timesteps=20000,
-        callback=CustomCallback(
+        total_timesteps=args.total_timesteps,
+        callback=WandbCallback(
             gradient_save_freq=1000, # TODO: I can probs get rid of this!
             model_save_freq=1000,
             model_save_path=f"logs/saved_model_logs/{args.wandb_experiment_name}",
