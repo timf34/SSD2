@@ -133,6 +133,7 @@ class CustomVecMonitor(VecMonitor):
                         # print("ehre now self.agents[agent_id][individual_rewards]: ", self.agents[agent_id]["individual_rewards"])
 
                         wandb.log({"x dude": 5})
+                        # Note that num_envs is an attribute of one of the inherited classes (VecEnvWrapper)
                         wandb.log({f"{agent_id}_individual_rewards": sum(self.agents[agent_id]["individual_rewards"])/self.num_envs})
                         # TODO: this is where things are getting printed... sometimes with all 0's
                         # print(f"{agent_id}_individual_rewards: {sum(self.agents[agent_id]['individual_rewards'])}")
