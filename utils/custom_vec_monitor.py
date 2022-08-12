@@ -26,7 +26,7 @@ wandb.login(key=WANDB_API_KEY)
 wandb.init(
         project="sb3_train_test",
         name="testing adding new variables",
-        mode="disabled"
+        mode="online",
 )
 
 
@@ -111,9 +111,11 @@ class CustomVecMonitor(VecMonitor):
                     info = infos[j].copy()
                     episode_return = self.episode_returns[j]
 
-                    print(f"episode return no.{j}: {episode_return}")
-                    if j == 0:
-                        print("episode_return: ", self.episode_returns)
+                    # TODO: note that I might want to leave some of these print statements here somehow to help
+                    #  with debugging in the future.
+                    # print(f"episode return no.{j}: {episode_return}")
+                    # if j == 0:
+                    #     print("episode_return: ", self.episode_returns)
                     episode_length = self.episode_lengths[j]
                     episode_info = {"r": episode_return, "l": episode_length, "t": round(time.time() - self.t_start, 6)}
 
@@ -125,17 +127,19 @@ class CustomVecMonitor(VecMonitor):
                         self.results_writer.write_row(episode_info)
                     new_infos[j] = info
 
-                    if self.use_wandb is True:
-                        agent_id = f"agent-{str(i)}"
+                    agent_id = f"agent-{str(i)}"
+
+                    if self.use_wandb is True and self.agents[agent_id]["individual_rewards"] != []:
+                        # print("ehre now self.agents[agent_id][individual_rewards]: ", self.agents[agent_id]["individual_rewards"])
+
                         wandb.log({"x dude": 5})
-                        wandb.log({f"{agent_id}_individual_rewards": sum(self.agents[agent_id]["individual_rewards"])})
+                        wandb.log({f"{agent_id}_individual_rewards": sum(self.agents[agent_id]["individual_rewards"])/self.num_envs})
                         # TODO: this is where things are getting printed... sometimes with all 0's
-                        print(f"{agent_id}_individual_rewards: {sum(self.agents[agent_id]['individual_rewards'])}")
-                        wandb.log({f"{agent_id}_beam_fired": sum(self.agents[agent_id]["beam_fired"])})
+                        # print(f"{agent_id}_individual_rewards: {sum(self.agents[agent_id]['individual_rewards'])}")
+                        wandb.log({f"{agent_id}_beam_fired": sum(self.agents[agent_id]["beam_fired"])/self.num_envs})
                         wandb.log({f"{agent_id}_beam_hit": sum(self.agents[agent_id]["beam_hit"])/self.num_envs})
                         wandb.log({f"{agent_id}_apples_consumed": sum(self.agents[agent_id]["apples_consumed"])/self.num_envs})
 
-                    agent_id = f"agent-{str(i)}"
                     self.agents[agent_id]["individual_rewards"] = []
                     self.agents[agent_id]["beam_fired"] = []
                     self.agents[agent_id]["apples_consumed"] = []
@@ -194,7 +198,7 @@ def pseudo_step(rewards, dones, step_size=5) -> None:
 
     print(agents["agent-0"]["individual_rewards"])
 
-    if num_agents is 5:
+    if num_agents == 5:
         for agent_id, agent_object in agents.items():
             assert agents["agent-0"]["individual_rewards"] == [0.0, 0.0]
             assert agents["agent-1"]["individual_rewards"] == [-1.0, -50.0]
