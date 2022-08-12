@@ -11,7 +11,7 @@ class Config:
     # TODO: I should comment the figures I typically use for diff things here!
 
     # Parser args
-    env_name: str = "harvest" # Choices: ["harvest", "cleanup"]
+    env_name: str = "cleanup" # Choices: ["harvest", "cleanup"]
     algo_name: str = "A2C"
     num_agents: int = 5
     rollout_len: int = 1000
@@ -40,7 +40,7 @@ class Config:
     # Wandb args
     wandb_mode = 'online' # Can be 'online', 'offline', or 'disabled'
     use_wandb: bool = True
-    save_vid_every_n_steps: int = 500
+    save_vid_every_n_steps: int = 10000
     vec_video_rollout_legnth: int = 1000 # How many steps to save to the video (default is 200, and total episode would be 1000)
 
     # Paths
