@@ -119,11 +119,11 @@ class CustomVecMonitor(VecMonitor):
 
                     info["episode"] = episode_info
                     self.episode_count += 1
-                    self.episode_returns[i] = 0
-                    self.episode_lengths[i] = 0
+                    self.episode_returns[j] = 0
+                    self.episode_lengths[j] = 0
                     if self.results_writer:
                         self.results_writer.write_row(episode_info)
-                    new_infos[i] = info
+                    new_infos[j] = info
 
                     if self.use_wandb is True:
                         agent_id = f"agent-{str(i)}"
