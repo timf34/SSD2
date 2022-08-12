@@ -12,8 +12,8 @@ class Config:
 
     # Parser args
     env_name: str = "cleanup" # Choices: ["harvest", "cleanup"]
-    algo_name: str = "PPO"
-    num_agents: int = 2
+    algo_name: str = "A2C"
+    num_agents: int = 5
     rollout_len: int = 1000
     total_timesteps: int = 1e8
     use_collective_reward: bool = False # Give each agent the collective reward across all agents
@@ -21,9 +21,9 @@ class Config:
     alpha: float = 5
     beta: float = 0.05
 
-    num_cpus: int = 6
-    num_envs: int = 6  # Number of parallel multi-agent environments
-    num_frames: int = 6  # Number of frames to stack together for input to the network; use >4 to avoid automatic VecTransposeImage
+    num_cpus: int = 12  # 12 for colab with 5 agents;
+    num_envs: int = 10  # Number of parallel multi-agent environments; 10 for colab with 5 agents;
+    num_frames: int = 10  # Number of frames to stack together for input to the network; use >4 to avoid automatic VecTransposeImage
 
     features_dim: int= 128  # output layer of cnn extractor AND shared layer for policy and value functions
     fcnet_hiddens: Tuple[int, int] = (1024, 128)  # Two hidden layers for cnn extractor
