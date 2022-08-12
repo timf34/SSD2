@@ -1,13 +1,15 @@
 import time
 import sys
 import wandb
+import pandas as pd
+
 from typing import Optional, Tuple, Dict, List
 from stable_baselines3.common.vec_env.vec_monitor import VecMonitor
 from stable_baselines3.common.results_plotter import load_results, ts2xy, plot_results
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvStepReturn, VecEnv
+from stable_baselines3.common.callbacks import BaseCallback
 from wandb.integration.sb3 import WandbCallback
 from stable_baselines3 import PPO
-import pandas as pd
 
 from utils.sb3_custom_cnn import CustomCNN
 from utils.env_getter_utils import get_supersuit_parallelized_environment
@@ -24,6 +26,7 @@ wandb.login(key=WANDB_API_KEY)
 wandb.init(
         project="sb3_train_test",
         name="testing adding new variables",
+        mode="online"
 )
 
 
@@ -53,11 +56,13 @@ class CustomVecMonitor(VecMonitor):
                  filename: Optional[str] = None,
                  info_keywords: Tuple[str, ...] = (),
                  number_agents: int = 5,
+                 use_wandb: bool = True,
                  ):
         super().__init__(venv, filename, info_keywords=info_keywords)
         self.per_agent_returns: Dict[int, List[int]] = {}
         self.number_agents = number_agents
         self.agents: Dict[str, Dict[str, List[int]]] = {}
+        self.use_wandb = use_wandb
 
         if self.number_agents is not None:
             for i in range(self.number_agents):
@@ -65,19 +70,21 @@ class CustomVecMonitor(VecMonitor):
                 # TODO: We might want to use a class here, then I could also use a .reset() method
                 self.agents[agent_id] = Agent(agent_id)
 
+        print("Venv: ", self.venv)
+
     def print_venv_attributes(self):
         print("\n Here are the attributes of the venv: ")
         # Pretty print the __dict__ of the venv
+        print(self.venv)
         for key, value in self.venv.__dict__.items():
             print(f"{key}: {value}")
 
-        print("\n Here are the attributes of the venv.env: ")
-        for key, value in self.venv.env.__dict__.items():
-            print(f"{key}: {value}")
-
-        print("\n Here are the attributes of the venv.env.venv: ")
-        for key, value in self.venv.env.venv.__dict__.items():
-            print(f"{key}: {value}")
+        print("\n Here are the attributes of the venv.venv: ")
+        print(self.venv.venv)
+        for key, value in self.venv.venv.__dict__.items():
+            # Skipping observations buffers keys because they are huge
+            if key != "observations_buffers":
+                print(f"{key}: {value}")
 
     def step_wait(self) -> VecEnvStepReturn:
         # TODO: note that everything done here is done every step!
@@ -93,13 +100,7 @@ class CustomVecMonitor(VecMonitor):
                     info = infos[i].copy()
                     episode_return = self.episode_returns[j]
                     episode_length = self.episode_lengths[j]
-                    episode_info = {"r": episode_return, "l": episode_length, "t": round(time.time() - self.t_start, 6), "x": 5}
-
-                    # for key in self.info_keywords:
-                    #     # This was throwing an error here, as this was expecting the key to be in the info_keywords and
-                    #     # in the info dict (which is returned directly from env.step_wait()
-                    #     episode_info[key] = info[key]
-                    #     pass
+                    episode_info = {"r": episode_return, "l": episode_length, "t": round(time.time() - self.t_start, 6)}
 
                     info["episode"] = episode_info
                     self.episode_count += 1
@@ -108,6 +109,23 @@ class CustomVecMonitor(VecMonitor):
                     if self.results_writer:
                         self.results_writer.write_row(episode_info)
                     new_infos[i] = info
+
+                    if self.use_wandb is True:
+                        agent_id = f"agent-{str(i)}"
+                        wandb.log({"x dude": 5})
+                        wandb.log({f"{agent_id}_individual_rewards": sum(self.agents[agent_id]["individual_rewards"])})
+                        print(f"{agent_id}_individual_rewards: {sum(self.agents[agent_id]['individual_rewards'])}")
+                        wandb.log({f"{agent_id}_beam_fired": sum(self.agents[agent_id]["beam_fired"])})
+                        wandb.log({f"{agent_id}_beam_hit": sum(self.agents[agent_id]["beam_hit"])})
+                        wandb.log({f"{agent_id}_apples_consumed": sum(self.agents[agent_id]["apples_consumed"])})
+
+                    agent_id = f"agent-{str(i)}"
+                    self.agents[agent_id]["individual_rewards"] = []
+                    self.agents[agent_id]["beam_fired"] = []
+                    self.agents[agent_id]["apples_consumed"] = []
+                    self.agents[f"{str(agent_id)}"]["beam_hit"] = []
+
+
                 else:
                     # Individual agent metrics.
                     # TODO: Note that this wouldn't include metrics from the last step!
@@ -194,8 +212,8 @@ class CustomCallback(WandbCallback):
         # TODO: do note that this gets galled every single step, and not just at the end of each episode.
         results = load_results(self.log_dir)
         if not results.empty:
-            print("Here are the last num agents x num envs results:")
-            print(results.x.values[-(self.num_rows):])
+            # print("Here are the last num agents x num envs results:")
+            # print(results.x.values[-(self.num_rows):])
             self.logger.record('last_results', results.x.values[-(self.num_rows):])
 
         # Wandb code: https://github.com/wandb/wandb/blob/584e2efeeaf9f894b4f0984a40c61efa9b6e3104/wandb/integration/sb3/sb3.py#L134
@@ -213,8 +231,11 @@ def lets_tests_vec_monitor(train=True):
     """
     args = Config()
     env = get_supersuit_parallelized_environment(args)
+    print("env:", env)
+    print("env.env:", env.venv)
     env = CustomVecMonitor(env, filename=args.log_file_path, info_keywords=("x",))
     # env = CustomVecMonitor(env, filename=args.log_file_path)
+    # env.print_venv_attributes()
 
     if train:
         tensorboard_log = f"./logs/tb_results/sb3/{args.env_name}_ppo_paramsharing"
@@ -232,14 +253,15 @@ def lets_tests_vec_monitor(train=True):
             tensorboard_log=tensorboard_log, verbose=args.verbose, device='cuda'
         ).learn(
             total_timesteps=100000,
-            callback=CustomCallback(
-                num_agents=args.num_agents,
-                num_envs=args.num_envs,
-                verbose=2,
-                model_save_path=f"logs/saved_model_logs/testing",
-                model_save_freq=1000,
-                gradient_save_freq=1000,  # TODO: I can probs get rid of this!
-                ))
+            # callback=CustomCallback(
+            #     num_agents=args.num_agents,
+            #     num_envs=args.num_envs,
+            #     verbose=2,
+            #     model_save_path=f"logs/saved_model_logs/testing",
+            #     model_save_freq=1000,
+            #     gradient_save_freq=1000,  # TODO: I can probs get rid of this!
+            #     ))
+        )
 
 
 if __name__ == '__main__':
