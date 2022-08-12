@@ -11,7 +11,7 @@ class Config:
     # TODO: I should comment the figures I typically use for diff things here!
 
     # Parser args
-    env_name: str = "cleanup" # Choices: ["harvest", "cleanup"]
+    env_name: str = "harvest" # Choices: ["harvest", "cleanup"]
     algo_name: str = "A2C"
     num_agents: int = 5
     rollout_len: int = 1000
