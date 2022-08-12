@@ -136,10 +136,10 @@ class CustomVecMonitor(VecMonitor):
                         wandb.log({f"{agent_id}_apples_consumed": sum(self.agents[agent_id]["apples_consumed"])/self.num_envs})
 
                     agent_id = f"agent-{str(i)}"
-                    # self.agents[agent_id]["individual_rewards"] = []
-                    # self.agents[agent_id]["beam_fired"] = []
-                    # self.agents[agent_id]["apples_consumed"] = []
-                    # self.agents[f"{str(agent_id)}"]["beam_hit"] = []
+                    self.agents[agent_id]["individual_rewards"] = []
+                    self.agents[agent_id]["beam_fired"] = []
+                    self.agents[agent_id]["apples_consumed"] = []
+                    self.agents[f"{str(agent_id)}"]["beam_hit"] = []
 
 
                 else:
