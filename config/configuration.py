@@ -11,9 +11,9 @@ class Config:
     # TODO: I should comment the figures I typically use for diff things here!
 
     # Parser args
-    env_name: str = "harvest" # Choices: ["harvest", "cleanup"]
+    env_name: str = "cleanup" # Choices: ["harvest", "cleanup"]
     algo_name: str = "A2C"
-    num_agents: int = 5
+    num_agents: int = 2
     rollout_len: int = 1000
     total_timesteps: int = 2e8
     use_collective_reward: bool = False # Give each agent the collective reward across all agents
