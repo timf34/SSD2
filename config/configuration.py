@@ -13,7 +13,7 @@ class Config:
     # Parser args
     env_name: str = "cleanup" # Choices: ["harvest", "cleanup"]
     algo_name: str = "A2C"
-    num_agents: int = 2
+    num_agents: int = 3
     rollout_len: int = 1000
     total_timesteps: int = 2e8
     use_collective_reward: bool = False # Give each agent the collective reward across all agents
