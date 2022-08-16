@@ -11,7 +11,7 @@ class Config:
     # TODO: I should comment the figures I typically use for diff things here!
 
     # Parser args
-    env_name: str = "cleanup" # Choices: ["harvest", "cleanup"]
+    env_name: str = "harvest" # Choices: ["harvest", "cleanup"]
     algo_name: str = "A2C"
     num_agents: int = 5
     rollout_len: int = 1000
@@ -22,10 +22,10 @@ class Config:
     beta: float = 0.05
 
     num_cpus: int = 12  # 12 for colab with 5 agents;
-    num_envs: int = 10  # Number of parallel multi-agent environments; 10 for colab with 5 agents;
-    num_frames: int = 10  # Number of frames to stack together for input to the network; use >4 to avoid automatic VecTransposeImage
+    num_envs: int = 2  # Number of parallel multi-agent environments; 10 for colab with 5 agents;
+    num_frames: int = 10 # Number of frames to stack together for input to the network; use >4 to avoid automatic VecTransposeImage
 
-    features_dim: int= 128  # output layer of cnn extractor AND shared layer for policy and value functions
+    features_dim: int= 128 # output layer of cnn extractor AND shared layer for policy and value functions
     fcnet_hiddens: Tuple[int, int] = (1024, 128)  # Two hidden layers for cnn extractor
     ent_coef: int = 0.01  # entropy coefficient in loss. Typical value was: 0.001
     batch_size: int = rollout_len * num_envs // 2  # This is from the rllib baseline implementation

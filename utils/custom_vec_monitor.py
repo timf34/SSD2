@@ -21,13 +21,15 @@ else:
     from typing_extensions import Literal
 
 
-WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
-wandb.login(key=WANDB_API_KEY)
-wandb.init(
-        project="sb3_train_test",
-        name="testing adding new variables",
-        mode="online",
-)
+# Note: if this is not commented out before running sb3_train.py, this wandb.init will overwrite the init in sb3_train
+
+# WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
+# wandb.login(key=WANDB_API_KEY)
+# wandb.init(
+#         project="sb3_train_test",
+#         name="testing adding new variables",
+#         mode="online",
+# )
 
 
 # TODO: note down this crazy silly error. This specific individual dict was being shared! I need to use objects here!
@@ -132,7 +134,7 @@ class CustomVecMonitor(VecMonitor):
                     if self.use_wandb is True and self.agents[agent_id]["individual_rewards"] != []:
                         # print("ehre now self.agents[agent_id][individual_rewards]: ", self.agents[agent_id]["individual_rewards"])
 
-                        wandb.log({"x dude": 5})
+                        # wandb.log({"x dude": 5})
                         # Note that num_envs is an attribute of one of the inherited classes (VecEnvWrapper)
                         wandb.log({f"{agent_id}_individual_rewards": sum(self.agents[agent_id]["individual_rewards"])/self.num_envs})
                         # TODO: this is where things are getting printed... sometimes with all 0's
