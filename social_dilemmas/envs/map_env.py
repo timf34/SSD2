@@ -68,7 +68,7 @@ class MapEnv(ParallelEnv):
         view_len,
         num_agents=1,
         color_map=None,
-        return_agent_actions=False,
+        return_agent_actions=True,
         use_collective_reward=False,
         inequity_averse_reward=False,
         alpha=0.0,
