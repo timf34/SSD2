@@ -14,8 +14,8 @@ from utils.env_getter_utils import get_supersuit_parallelized_environment, get_p
 
 class CompareSupersuitAndPettingzoo:
     def __init__(self):
-        self.pz_env = get_parallelized_env("cleanup")
-        self.ss_env = get_supersuit_parallelized_environment("cleanup")
+        self.pz_env = get_parallelized_env()
+        self.ss_env = get_supersuit_parallelized_environment()
         print("ss_env.metadata: ", self.ss_env.metadata)
         # Clost the envs
         self.pz_env.close()
@@ -42,13 +42,28 @@ class CompareSupersuitAndPettingzoo:
         MAX_CYCLES = 10
         self.pz_env.reset()
         n_act = self.pz_env.action_space("agent-0").n
+        print("pz_env.agents: ", self.pz_env.__dict__)
         for _ in range(MAX_CYCLES * self.pz_env.num_agents):
             actions = {agent: np.random.randint(n_act) for agent in self.pz_env.agents}
-            _, _, _, _ = self.pz_env.step(actions)
+            obs, rewards, dones, infos = self.pz_env.step(actions)
             self.pz_env.render()
             if not self.pz_env.agents:
                 print("pz_env is empty")
                 self.pz_env.reset()
+
+    def step_pz(self, num_steps: int = 1):
+        n_act = self.pz_env.action_space("agent-0").n
+        print("pz_env.agents: ", self.pz_env.__dict__)
+        for _ in range(num_steps * self.pz_env.num_agents):
+            actions = {agent: np.random.randint(n_act) for agent in self.pz_env.agents}
+            obs, rewards, dones, infos = self.pz_env.step(actions)
+            return obs, rewards, dones, infos
+
+    def step_ss(self, num_steps: int = 1):
+        for _ in range(num_steps * self.ss_env.num_envs):
+            actions = [self.ss_env.action_space.sample() for _ in range(self.ss_env.num_envs)]
+            obs, rewards, dones, infos = self.ss_env.step(actions)
+            return obs, rewards, dones, infos
 
     def rollout_ss_env(self):
         # This page is useful: https://github.com/Farama-Foundation/SuperSuit/blob/master/test/test_vector/test_pettingzoo_to_vec.py
@@ -58,7 +73,7 @@ class CompareSupersuitAndPettingzoo:
         # For some reason, the Markov env doesn't inherit the num_agents attribute from the parallelized env
         for _ in range(MAX_CYCLES * self.ss_env.num_envs):
             actions = [self.ss_env.action_space.sample() for _ in range(self.ss_env.num_envs)]
-            _, _, _, _ = self.ss_env.step(actions)
+            obs, rewards, dones, infos = self.ss_env.step(actions)
             self.ss_env.render(mode='human')
             if not self.ss_env.num_envs:
                 print("ss_env is empty")
@@ -76,7 +91,20 @@ if __name__ == '__main__':
     x = CompareSupersuitAndPettingzoo()
     # x.print_types()
     # x.print_attributes()
-    x.rollout_pz_env()
-    # x.rollout_ss_env()
-    print("we are done")
+    obs, rewards, dones, infos = x.step_pz(num_steps=1)
+    print("obs shape: ", obs.shape)
+    print("obs type: ", type(obs))
+    print("rewards shape: ", rewards.shape)
+    print("rewards type: ", type(rewards))
+    print("dones shape: ", dones.shape)
+    print("infos shape: ", infos.shape)
+
+    obs, rewards, dones, infos = x.step_ss(num_steps=1)
+    print("obs shape: ", obs.shape)
+    print("obs type: ", type(obs))
+    print("rewards shape: ", rewards.shape)
+    print("rewards type: ", type(rewards))
+    print("dones shape: ", dones.shape)
+    print("infos shape: ", infos.shape)
+
 
