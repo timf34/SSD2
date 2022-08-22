@@ -87,12 +87,12 @@ class CustomVecMonitor(VecMonitor):
     def print_venv_attributes(self):
         print("\n Here are the attributes of the venv: ")
         # Pretty print the __dict__ of the venv
-        print(self.venv)
+        print("self.venv: ", self.venv)
         for key, value in self.venv.__dict__.items():
             print(f"{key}: {value}")
 
         print("\n Here are the attributes of the venv.venv: ")
-        print(self.venv.venv)
+        print("self.venv.venv: ", self.venv.venv)
         for key, value in self.venv.venv.__dict__.items():
             # Skipping observations buffers keys because they are huge
             if key != "observations_buffers":
@@ -102,6 +102,16 @@ class CustomVecMonitor(VecMonitor):
     def step_wait(self) -> VecEnvStepReturn:
         # TODO: note that everything done here is done every step!
         obs, rewards, dones, infos = self.venv.step_wait()
+
+        # print("obs shape: ", obs.shape)
+        # print("obs type: ", type(obs))
+        # # print("obs: ", obs)
+        #
+        # print("infos type: ", type(infos))
+        # #print("infos shape: ", infos.shape)
+        # print("infos: ", infos)
+
+
         self.episode_returns += rewards
         self.episode_lengths += 1
         new_infos = list(infos[:])
@@ -131,11 +141,13 @@ class CustomVecMonitor(VecMonitor):
 
                     agent_id = f"agent-{str(i)}"
 
-                    if self.use_wandb is True and self.agents[agent_id]["individual_rewards"] != []:
+                    # if self.use_wandb is True and self.agents[agent_id]["individual_rewards"] != []:
                         # print("ehre now self.agents[agent_id][individual_rewards]: ", self.agents[agent_id]["individual_rewards"])
 
                         # wandb.log({"x dude": 5})
                         # Note that num_envs is an attribute of one of the inherited classes (VecEnvWrapper)
+
+                        # Just commenting this out for now
                         wandb.log({f"{agent_id}_individual_rewards": sum(self.agents[agent_id]["individual_rewards"])/self.num_envs})
                         # TODO: this is where things are getting printed... sometimes with all 0's
                         # print(f"{agent_id}_individual_rewards: {sum(self.agents[agent_id]['individual_rewards'])}")
@@ -277,10 +289,11 @@ def lets_tests_vec_monitor(train=True):
     args = Config()
     env = get_supersuit_parallelized_environment(args)
     print("env:", env)
-    print("env.env:", env.venv)
+    print("env dict", env.__dict__, "\n")
+    # print("env par env", env.par_env.__dict__, "\n")
     env = CustomVecMonitor(env, number_agents=args.num_agents, filename=args.log_file_path, info_keywords=("x",))
     # env = CustomVecMonitor(env, filename=args.log_file_path)
-    # env.print_venv_attributes()
+    env.print_venv_attributes()
 
     if train:
         tensorboard_log = f"./logs/tb_results/sb3/{args.env_name}_ppo_paramsharing"
