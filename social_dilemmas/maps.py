@@ -51,6 +51,19 @@ CLEANUP_MAP = [
     "@@@@@@@@@@@@@@@@@@",
 ]
 
+# Where T is for the box trap
+BOX_TRAPPED_MAP = [
+    "@@@@@@@@@@@@@",
+    "@           @",
+    "@  AA   TTT @",
+    "@  AA   TTT @",
+    "@       TTT @",
+    "@        AA @",
+    "@  AA    AA @",
+    "@  AA       @",
+    "@           @",
+    "@@@@@@@@@@@@@"
+]
 
 # 'S' means turned-on switch
 # 's' means turned-off switch
