@@ -21,7 +21,7 @@ class HarvestEnv(MapEnv):
         self,
         ascii_map=HARVEST_MAP,
         num_agents=1,
-        return_agent_actions=False,
+        return_agent_actions=True,
         use_collective_reward=False,
         inequity_averse_reward=False,
         alpha=0.0,
