@@ -119,4 +119,6 @@ if __name__ == "__main__":
     add_default_args(parser)
     args = parser.parse_args()
     c = Controller(args)
-    c.render_rollout(path="../visualization/rollout", horizon=100, render_type="pretty", fps=1)
+    # c.render_rollout(path="../visualization/rollout", horizon=100, render_type="pretty", fps=1)
+    c.render_rollout(path="../visualization/rollout", horizon=100, render_type="x", fps=1)
+
