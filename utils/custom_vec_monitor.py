@@ -111,7 +111,6 @@ class CustomVecMonitor(VecMonitor):
         # #print("infos shape: ", infos.shape)
         # print("infos: ", infos)
 
-
         self.episode_returns += rewards
         self.episode_lengths += 1
         new_infos = list(infos[:])
@@ -141,7 +140,7 @@ class CustomVecMonitor(VecMonitor):
 
                     agent_id = f"agent-{str(i)}"
 
-                    # if self.use_wandb is True and self.agents[agent_id]["individual_rewards"] != []:
+                    if self.use_wandb is True and self.agents[agent_id]["individual_rewards"] != []:
                         # print("ehre now self.agents[agent_id][individual_rewards]: ", self.agents[agent_id]["individual_rewards"])
 
                         # wandb.log({"x dude": 5})
@@ -159,7 +158,6 @@ class CustomVecMonitor(VecMonitor):
                     self.agents[agent_id]["beam_fired"] = []
                     self.agents[agent_id]["apples_consumed"] = []
                     self.agents[f"{str(agent_id)}"]["beam_hit"] = []
-
 
                 else:
                     # Individual agent metrics.
