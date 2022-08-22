@@ -16,7 +16,7 @@ class RenderRolloutVecMonitor(VecMonitor):
         super(RenderRolloutVecMonitor, self).__init__(env, filename)
 
 
-def get_parallelized_env(args: Config) -> parallel_env:
+def get_parallelized_env(args: Config=None) -> parallel_env:
     if args is None:
         args = Config()
     return parallel_env(
@@ -30,7 +30,7 @@ def get_parallelized_env(args: Config) -> parallel_env:
     )
 
 
-def get_supersuit_parallelized_environment(args: Config) -> SB3VecEnvWrapper:
+def get_supersuit_parallelized_environment(args: Config=None) -> SB3VecEnvWrapper:
     if args is None:
         args = Config()
     # print("we are in get supersuit parallelized environment")
@@ -47,3 +47,35 @@ def get_supersuit_parallelized_environment(args: Config) -> SB3VecEnvWrapper:
     )
     # print("env is after concat vec envs: ", env)
     return env
+
+
+def step_through_envs() -> None:
+    """
+    We will just use this function to call step_wait on each of the environments above
+
+    I already have this code in supersuit vs pettingzoo.py in the learning directory!
+
+    :return:
+    """
+    env = get_supersuit_parallelized_environment()
+    # print("env is: ", env)
+    print("env dict is: ", env.__dict__)
+    obs, rewards, dones, infos = env.step()
+
+    print("obs shape: ", obs.shape)
+    print("obs type: ", type(obs))
+
+    print("rewards shape: ", rewards.shape)
+    print("rewards type: ", type(rewards))
+
+    print("dones shape: ", dones.shape)
+    print("dones type: ", type(dones))
+
+    print("infos shape: ", infos.shape)
+    print("infos type: ", type(infos))
+
+
+if __name__ == "__main__":
+    step_through_envs()
+
+
