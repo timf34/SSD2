@@ -16,6 +16,8 @@ from utils.sb3_custom_cnn import CustomCNN
 from utils.wandb_vec_vid_recorder import WandbVecVideoRecorder
 from utils.custom_vec_monitor import CustomVecMonitor, CustomCallback
 
+from marl_baselines3 import IndependentPPO
+
 SEED = 42
 
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -62,6 +64,25 @@ def get_algo(env, policy_kwargs, tensorboard_log, args, policy_model="CnnPolicy"
         seed=SEED,
         device=DEVICE
     )
+    elif args.algo_name == 'IndependentPPO':
+        return IndependentPPO(
+        policy=policy_model,
+        num_agents=args.num_agents,
+        env=env,
+        learning_rate=args.lr,
+        n_steps=args.rollout_len,
+        batch_size=args.batch_size, # not this
+        n_epochs=args.n_epochs,
+        gamma=args.gamma,
+        gae_lambda=args.gae_lambda,
+        ent_coef=args.ent_coef,
+        max_grad_norm=args.grad_clip,
+        target_kl=args.target_kl,
+        policy_kwargs=policy_kwargs,
+        tensorboard_log=tensorboard_log,
+        verbose=args.verbose,
+        device=DEVICE,
+    )
     else:
         raise ValueError(f"Unknown algo name: {args.algo_name}")
 
@@ -100,14 +121,19 @@ def main(args):
     tensorboard_log = f"./logs/tb_results/sb3/{args.env_name}_{args.algo_name}_paramsharing"
 
     model = get_algo(env=env, policy_kwargs=policy_kwargs, tensorboard_log=tensorboard_log, args=args)
-    model.learn(
-        total_timesteps=args.total_timesteps,
-        callback=WandbCallback(
-            gradient_save_freq=1000, # TODO: I can probs get rid of this!
-            model_save_freq=1000,
-            model_save_path=f"logs/saved_model_logs/{args.wandb_experiment_name}",
-            verbose=2
+    if args.algo_name != 'IndependentPPO':
+        model.learn(
+            total_timesteps=args.total_timesteps,
+            callback=WandbCallback(
+                gradient_save_freq=1000, # TODO: I can probs get rid of this!
+                model_save_freq=1000,
+                model_save_path=f"logs/saved_model_logs/{args.wandb_experiment_name}",
+                verbose=2
+            )
         )
+    else:
+        model.learn(
+            total_timesteps=args.total_timesteps,
     )
 
     logdir = model.logger.dir
@@ -115,6 +141,8 @@ def main(args):
     model.save(f"{logdir}/model")
     del model
     model = PPO.load(f"{logdir}/model")
+
+    # TODO: it doesn't seem that we are working. Chcek the printes
 
 
 if __name__ == "__main__":
