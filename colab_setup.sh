@@ -27,6 +27,7 @@ pip install stable-baselines3==1.5.0
 pip install supersuit==3.5.0
 pip install tensorboard
 pip install opencv-python
+pip install git+https://github.com/Rohan138/marl-baselines3
 pip install gym==0.24.0
 # For some reason its not being installed in the `wsl_requirements.txt` file
 pip install wandb
