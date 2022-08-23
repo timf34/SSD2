@@ -10,6 +10,8 @@ from social_dilemmas.maps import BOX_TRAPPED_MAP
 _BOX_TRAPPED_ACTIONS = {"FIRE": 5, "UNLOCK": 1}  # length of unlocking beam (we won't actually see it anyways)
 BOX_TRAPPED_VIEW_SIZE = 7
 
+APPLE_RADIUS = 2
+
 
 class BoxTrapped(MapEnv):
     def __init__(
@@ -89,3 +91,24 @@ class BoxTrapped(MapEnv):
         self.update_map(new_apples)
         # Lock the box again.
         self.box_is_locked = True
+
+    def spawn_apples(self):
+        """Construct the apples spawned in this step. Note that apples spawn 100% of the time (don't care about apple
+        density).
+
+        Returns
+        -------
+        new_apple_points: list of 2-d lists
+            a list containing lists indicating the spawn positions of new apples
+        """
+
+        new_apple_points = []
+        agent_positions = self.agent_pos
+        random_numbers = rand(len(self.apple_points))
+        r = 0
+        for i in range(len(self.apple_points)):
+            row, col = self.apple_points[i]
+            # apples can't spawn where agents are standing or where an apple already is
+            if [row, col] not in agent_positions and self.world_map[row, col] != b"A":
+                new_apple_points.append((row, col, b"A"))
+        return new_apple_points
