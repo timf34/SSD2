@@ -489,8 +489,8 @@ class MapEnv(ParallelEnv):
         rgb_arr = cv2.resize(rgb_arr, (300, 216), interpolation=cv2.INTER_NEAREST)
 
         # Going to put these two in here for the minute... it might really slow things down but we'll see!
-        # plt.cla()
-        # plt.imshow(rgb_arr, interpolation="nearest")
+        plt.cla()
+        plt.imshow(rgb_arr, interpolation="nearest")
         if mode == "human":
             # plt.cla()
             # Shape is still (25, 18, 3) right no
