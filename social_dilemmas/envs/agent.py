@@ -269,7 +269,7 @@ class SwitchAgent(Agent):
 
 
 BOX_TRAPPED_ACTIONS = BASE_ACTIONS.copy()
-BOX_TRAPPED_ACTIONS.update({7: "FIRE", 8 : "UNLOCK"})
+BOX_TRAPPED_ACTIONS.update({7: "FIRE", 8: "UNLOCK"})
 
 
 class BoxTrappedAgent(Agent):
