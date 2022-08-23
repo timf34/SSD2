@@ -138,8 +138,8 @@ class Agent(object):
         return (
             0 <= row < self.full_map.shape[0]
             and 0 <= column < self.full_map.shape[1]
-            # You can't walk through walls, closed doors or switches
-            and self.full_map[row, column] not in [b"@", b"D", b"w", b"W"]
+            # You can't walk through walls, closed doors or switches (or trapped Box chars)
+            and self.full_map[row, column] not in [b"@", b"D", b"w", b"W", b"T"]
         )
 
     def update_agent_rot(self, new_rot):
