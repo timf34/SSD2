@@ -57,12 +57,21 @@ class BoxTrapped(MapEnv):
                 fire_char=b"F",
             )
         elif action == "UNLOCK":
-            self.box_is_locked = True
-            updates = self.update_map_unlock(
-                agent.pos.tolist(),
-                agent.get_orientation()
-            )
+            if self.check_for_trapped_box():
+                self.box_is_locked = True  # `custom_map_update()` will update the map to show the unlocked box
+            else:
+                self.box_is_locked = False
+
         return updates
+
+    def check_for_trapped_box(self) -> bool:
+        # This function checks if the cells around (above and below, side to side) an agent contain "T" and return True if so.
+        pos = self.agent_pos
+        for i in range(len(pos)):
+            row, col = pos[i]
+            if self.world_map[row - 1, col] == b"T" and self.world_map[row + 1, col] == b"T" or self.world_map[row, col - 1] == b"T" and self.world_map[row, col + 1] == b"T":
+                return True
+
 
     def custom_reset(self):
         """Initialize the walls, the apples and lock the box."""
@@ -94,7 +103,7 @@ class BoxTrapped(MapEnv):
         # If the box is unlocked, we change the map to show the unlocked box -> b"T" changes to b"U"
         if not self.box_is_locked:
             self.update_map(self.unlock_box())
-            self.box_is_locked = True # To avoid this being called repeatedly - I think this should be good:)
+            self.box_is_locked = True # TODO: Check this; to avoid this being called repeatedly - I think this should be good:)
 
     def unlock_box(self):
         unlocked_box_points = []
