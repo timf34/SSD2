@@ -18,6 +18,7 @@ from social_dilemmas.config.default_args import add_default_args
 from social_dilemmas.envs.cleanup import CleanupEnv
 from social_dilemmas.envs.harvest import HarvestEnv
 from social_dilemmas.envs.switch import SwitchEnv
+from social_dilemmas.envs.box_trapped import BoxTrapped
 
 
 class Controller(object):
@@ -32,6 +33,9 @@ class Controller(object):
         elif self.env_name == "switch":
             print("Initializing Switch environment")
             self.env = SwitchEnv(args, num_agents=1)
+        elif self.env_name == "box_trapped":
+            print("Initializing BoxTrapped environment")
+            self.env = BoxTrapped(num_agents=2)
         else:
             print("Error! Not a valid environment type")
             return
@@ -108,7 +112,7 @@ class Controller(object):
             utility_funcs.make_video_from_image_dir(path, image_path, fps=fps, video_name=video_name)
 
             # Clean up images
-            shutil.rmtree(image_path)
+            # shutil.rmtree(image_path)
         else:
             rewards, observations, full_obs = self.rollout(horizon=horizon)
             utility_funcs.make_video_from_rgb_imgs(full_obs, path, fps=fps, video_name=video_name)
@@ -119,6 +123,6 @@ if __name__ == "__main__":
     add_default_args(parser)
     args = parser.parse_args()
     c = Controller(args)
-    # c.render_rollout(path="../visualization/rollout", horizon=100, render_type="pretty", fps=1)
-    c.render_rollout(path="../visualization/rollout", horizon=100, render_type="x", fps=1)
+    c.render_rollout(path="./videos/rollout", horizon=100, render_type="pretty", fps=1)
+    # c.render_rollout(path="./videos/rollos", horizon=100, render_type="x", fps=1)
 
