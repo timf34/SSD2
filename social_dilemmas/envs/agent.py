@@ -297,6 +297,9 @@ class BoxTrappedAgent(Agent):
     def get_done(self):
         return False
 
+    def hit(self, char):
+        pass
+
     def fire_beam(self, char):
         # Cost of firing a switch beam
         # Nothing for now.
