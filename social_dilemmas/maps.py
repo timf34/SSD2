@@ -51,9 +51,10 @@ CLEANUP_MAP = [
     "@@@@@@@@@@@@@@@@@@",
 ]
 
-# Where T is for the box trap
+# Where T is for the box trap (13 across x 11 down)
 BOX_TRAPPED_MAP = [
     "@@@@@@@@@@@@@",
+    "@           @",
     "@           @",
     "@  AA   TTT @",
     "@  AA   TPT @",
