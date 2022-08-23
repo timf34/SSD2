@@ -28,7 +28,7 @@ class Config:
 
     features_dim: int= 128 # output layer of cnn extractor AND shared layer for policy and value functions
     fcnet_hiddens: Tuple[int, int] = (1024, 128)  # Two hidden layers for cnn extractor
-    ent_coef: int = 0.001  # entropy coefficient in loss. Typical value was: 0.001
+    ent_coef: int = 0.01  # entropy coefficient in loss. Typical value was: 0.001
     batch_size: int = rollout_len * num_envs // 2  # This is from the rllib baseline implementation
     lr: float = 0.0001
     n_epochs: int = 30
