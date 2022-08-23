@@ -43,7 +43,7 @@ DEFAULT_COLOURS = {
     b"8": np.array([250, 204, 255], dtype=np.uint8),  # Pink
     b"9": np.array([238, 223, 16], dtype=np.uint8),  # Yellow
     b"T": np.array([220, 220, 220], dtype=np.uint8),  # Light grey
-    b"U": np.array([255, 255, 255], dtype=np.uint8),  # White
+    b"U": np.array([0, 255, 255], dtype=np.uint8),  # light saturated cyan (turquoise)
 }
 
 # the axes look like this when printed out
