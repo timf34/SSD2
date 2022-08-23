@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from numpy.random import rand
 
 from social_dilemmas.envs.agent import BoxTrappedAgent
@@ -82,7 +83,6 @@ class BoxTrapped(MapEnv):
         for apple_point in self.apple_points:
             self.single_update_map(apple_point[0], apple_point[1], b"A")
 
-
     def setup_agents(self):
         # Initializing the agents.
         map_with_agents = self.get_map_with_agents()
@@ -132,3 +132,35 @@ class BoxTrapped(MapEnv):
             if [row, col] not in agent_positions and self.world_map[row, col] != b"A":
                 new_apple_points.append((row, col, b"A"))
         return new_apple_points
+
+def try_render_rollout():
+    env = BoxTrapped()
+    MAX_CYCLES = 100
+    env.reset()
+    # n_act = env.action_space("agent-0").n
+    for _ in range(MAX_CYCLES * 2):
+        actions = {agent: np.random.randint(9) for agent in env.agents}
+        obs, rewards, dones, infos = env.step(actions)
+        env.render()
+        # time.sleep(0.1)
+        print("one step")
+        if not env.agents:
+            print("Where are the agents?")
+    print("done")
+
+
+
+    # self.pz_env.reset()
+    # n_act = self.pz_env.action_space("agent-0").n
+    # print("pz_env.agents: ", self.pz_env.__dict__)
+    # for _ in range(MAX_CYCLES * self.pz_env.num_agents):
+    #     actions = {agent: np.random.randint(n_act) for agent in self.pz_env.agents}
+    #     obs, rewards, dones, infos = self.pz_env.step(actions)
+    #     self.pz_env.render(mode="human")
+    #     if not self.pz_env.agents:
+    #         print("pz_env is empty")
+    #         self.pz_env.reset()
+    # print("pz_env rollout complete")
+
+if __name__ == '__main__':
+    try_render_rollout()
