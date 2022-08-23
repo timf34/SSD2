@@ -83,14 +83,9 @@ class BoxTrapped(MapEnv):
             self.agents[agent_id] = agent
 
     def custom_map_update(self):
-        # TODO: oh wait is this the right thing.. its in step func.
-        # This is just an update that happens every step!
-        # Spawns the apples
-        # Sets the Box back to Locked state
+        # Spawns the apples every step if there are any.
         new_apples = self.spawn_apples()  # CHECK THE REGROW RATE ON THIS! I want it to be basically instant!
         self.update_map(new_apples)
-        # Lock the box again.
-        self.box_is_locked = True
 
     def spawn_apples(self):
         """Construct the apples spawned in this step. Note that apples spawn 100% of the time (don't care about apple
@@ -104,8 +99,6 @@ class BoxTrapped(MapEnv):
 
         new_apple_points = []
         agent_positions = self.agent_pos
-        random_numbers = rand(len(self.apple_points))
-        r = 0
         for i in range(len(self.apple_points)):
             row, col = self.apple_points[i]
             # apples can't spawn where agents are standing or where an apple already is
