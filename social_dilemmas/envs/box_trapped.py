@@ -57,7 +57,11 @@ class BoxTrapped(MapEnv):
                 fire_char=b"F",
             )
         elif action == "UNLOCK":
-            pass
+            self.box_is_locked = True
+            updates = self.update_map_unlock(
+                agent.pos.tolist(),
+                agent.get_orientation()
+            )
         return updates
 
     def custom_reset(self):
@@ -86,6 +90,20 @@ class BoxTrapped(MapEnv):
         # Spawns the apples every step if there are any.
         new_apples = self.spawn_apples()  # CHECK THE REGROW RATE ON THIS! I want it to be basically instant!
         self.update_map(new_apples)
+
+        # If the box is unlocked, we change the map to show the unlocked box -> b"T" changes to b"U"
+        if not self.box_is_locked:
+            self.update_map(self.unlock_box())
+            self.box_is_locked = True # To avoid this being called repeatedly - I think this should be good:)
+
+    def unlock_box(self):
+        unlocked_box_points = []
+        for row in range(self.base_map.shape[0]):
+            for col in range(self.base_map.shape[1]):
+                if self.base_map[row, col] == b"T":
+                    unlocked_box_points.append(((row, col, b"U")))
+        return unlocked_box_points
+
 
     def spawn_apples(self):
         """Construct the apples spawned in this step. Note that apples spawn 100% of the time (don't care about apple
