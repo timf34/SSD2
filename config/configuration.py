@@ -12,7 +12,7 @@ class Config:
 
     # Parser args
     env_name: str = "cleanup" # Choices: ["harvest", "cleanup"]
-    algo_name: str = "IndependentPPO"  # Choices: ["A2C", "PPO", "IndependentPPO"]
+    algo_name: str = "A2C"  # Choices: ["A2C", "PPO", "IndependentPPO"]
     num_agents: int = 5
     rollout_len: int = 1000
     total_timesteps: int = 2e8
