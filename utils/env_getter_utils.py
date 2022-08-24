@@ -60,7 +60,7 @@ def step_through_envs() -> None:
     env = get_supersuit_parallelized_environment()
     # print("env is: ", env)
     print("env dict is: ", env.__dict__)
-    obs, rewards, dones, infos = env.step()
+    obs, rewards, dones, infos = env.step_wait()
 
     print("obs shape: ", obs.shape)
     print("obs type: ", type(obs))
