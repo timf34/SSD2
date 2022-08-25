@@ -128,7 +128,7 @@ class CleanupEnv(MapEnv):
         """Constructs all the agents in self.agent"""
         map_with_agents = self.get_map_with_agents()
 
-        for i in range(self._num_agents):
+        for i in range(self.num_agents):
             agent_id = f"agent-{str(i)}"
             spawn_point = self.spawn_point()
             rotation = self.spawn_rotation()
