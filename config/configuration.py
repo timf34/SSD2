@@ -12,7 +12,7 @@ class Config:
 
     # Parser args
     env_name: str = "cleanup" # Choices: ["harvest", "cleanup"]
-    algo_name: str = "IndependentPPO"  # Choices: ["A2C", "PPO", "IndependentPPO"]
+    algo_name: str = "A2C"  # Choices: ["A2C", "PPO", "IndependentPPO"]
     num_agents: int = 5
     rollout_len: int = 1000
     total_timesteps: int = 2e8
@@ -22,12 +22,13 @@ class Config:
     beta: float = 0.05
 
     num_cpus: int = 12  # 12 for colab with 5 agents;
+    # Note taht I shouldn't have much more than 2 environments per thread. 
     num_envs: int = 2  # Number of parallel multi-agent environments; 10 for colab with 5 agents;
-    num_frames: int = 10 # 10 on Colab; Number of frames to stack together for input to the network; use >4 to avoid automatic VecTransposeImage
+    num_frames: int = 5 # 10 on Colab; Number of frames to stack together for input to the network; use >4 to avoid automatic VecTransposeImage
 
     features_dim: int= 128 # output layer of cnn extractor AND shared layer for policy and value functions
     fcnet_hiddens: Tuple[int, int] = (1024, 128)  # Two hidden layers for cnn extractor
-    ent_coef: int = 0.001  # entropy coefficient in loss. Typical value was: 0.001
+    ent_coef: int = 0.0001  # entropy coefficient in loss. Typical value was: 0.001
     batch_size: int = rollout_len * num_envs // 2  # This is from the rllib baseline implementation
     lr: float = 0.0001
     n_epochs: int = 30
