@@ -9,7 +9,7 @@ from social_dilemmas.maps import BOX_TRAPPED_MAP
 
 # For consistency with the other environments, I'll also use "FIRE" for now, but we can probs remove it in this env tbh
 _BOX_TRAPPED_ACTIONS = {"FIRE": 5, "UNLOCK": 1}  # length of unlocking beam (we won't actually see it anyways)
-BOX_TRAPPED_VIEW_SIZE = 7
+BOX_TRAPPED_VIEW_SIZE = 7  # 6 (we need to use 7 as thats what the CNN/ network expects  # This covers the whole map I think (gives 13x13 view while our map is only 13x11)
 
 APPLE_RADIUS = 2
 
