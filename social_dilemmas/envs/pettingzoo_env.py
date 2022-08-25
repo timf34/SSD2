@@ -55,7 +55,7 @@ class ssd_parallel_env(ParallelEnv):
         self.agents = self.possible_agents[:]
         self.num_cycles = 0
         self.dones = {agent: False for agent in self.agents}
-        return self.ssd_env.reset(seed)
+        return self.ssd_env.reset()
 
     def seed(self, seed=None):
         return self.ssd_env.reset(seed)
