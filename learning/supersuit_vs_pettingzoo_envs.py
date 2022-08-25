@@ -51,11 +51,12 @@ class CompareSupersuitAndPettingzoo:
                 print("pz_env is empty")
                 self.pz_env.reset()
 
+
     def step_pz(self, num_steps: int = 1):
         n_act = self.pz_env.action_space("agent-0").n
         print("pz_env.agents: ", self.pz_env.__dict__)
-        for _ in range(num_steps * self.pz_env.num_agents):
-            actions = {agent: np.random.randint(n_act) for agent in self.pz_env.agents}
+        for _ in range(num_steps * len(self.pz_env.possible_agents)):
+            actions = {agent: np.random.randint(n_act) for agent in self.pz_env.possible_agents}
             obs, rewards, dones, infos = self.pz_env.step(actions)
             return obs, rewards, dones, infos
 
@@ -75,6 +76,9 @@ class CompareSupersuitAndPettingzoo:
             actions = [self.ss_env.action_space.sample() for _ in range(self.ss_env.num_envs)]
             obs, rewards, dones, infos = self.ss_env.step(actions)
             self.ss_env.render(mode='human')
+            # Pause
+            input("Press Enter to continue...")
+
             if not self.ss_env.num_envs:
                 print("ss_env is empty")
                 self.ss_env.reset()
@@ -91,20 +95,22 @@ if __name__ == '__main__':
     x = CompareSupersuitAndPettingzoo()
     # x.print_types()
     # x.print_attributes()
-    obs, rewards, dones, infos = x.step_pz(num_steps=1)
-    print("obs shape: ", obs.shape)
-    print("obs type: ", type(obs))
-    print("rewards shape: ", rewards.shape)
-    print("rewards type: ", type(rewards))
-    print("dones shape: ", dones.shape)
-    print("infos shape: ", infos.shape)
-
-    obs, rewards, dones, infos = x.step_ss(num_steps=1)
-    print("obs shape: ", obs.shape)
-    print("obs type: ", type(obs))
-    print("rewards shape: ", rewards.shape)
-    print("rewards type: ", type(rewards))
-    print("dones shape: ", dones.shape)
-    print("infos shape: ", infos.shape)
+    # obs, rewards, dones, infos = x.step_pz(num_steps=1)
+    # print("obs shape: ", obs.shape)
+    # print("obs type: ", type(obs))
+    # print("rewards shape: ", rewards.shape)
+    # print("rewards type: ", type(rewards))
+    # print("dones shape: ", dones.shape)
+    # print("infos shape: ", infos.shape)
+    #
+    # obs, rewards, dones, infos = x.step_ss(num_steps=1)
+    # print("obs shape: ", obs.shape)
+    # print("obs type: ", type(obs))
+    # print("rewards shape: ", rewards.shape)
+    # print("rewards type: ", type(rewards))
+    # print("dones shape: ", dones.shape)
+    # print("infos shape: ", infos.shape)
+    # x.rollout_ss_env()
+    x.rollout_pz_env()
 
 
