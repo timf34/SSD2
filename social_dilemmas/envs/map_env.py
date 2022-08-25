@@ -4,12 +4,17 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from gym.spaces import Box, Dict
-# from ray.rllib.agents.callbacks import DefaultCallbacks
-# from ray.rllib.env import MultiAgentEnv
-from pettingzoo import ParallelEnv
-from stable_baselines3.common import callbacks
-import cv2
+from ray.rllib.agents.callbacks import DefaultCallbacks
+from ray.rllib.env import MultiAgentEnv
 
+from ray.rllib.utils.typing import (
+    AgentID,
+    EnvCreator,
+    EnvID,
+    EnvType,
+    MultiAgentDict,
+    MultiEnvDict,
+)
 
 _MAP_ENV_ACTIONS = {
     "MOVE_LEFT": [0, -1],  # Move left
@@ -62,7 +67,7 @@ DEFAULT_COLOURS = {
 #         |
 
 
-class MapEnv(ParallelEnv):
+class MapEnv(MultiAgentEnv):
     def __init__(
         self,
         ascii_map,
@@ -70,7 +75,7 @@ class MapEnv(ParallelEnv):
         view_len,
         num_agents=1,
         color_map=None,
-        return_agent_actions=True,
+        return_agent_actions=False,
         use_collective_reward=False,
         inequity_averse_reward=False,
         alpha=0.0,
@@ -92,11 +97,7 @@ class MapEnv(ParallelEnv):
         return_agent_actions: bool
             If true, the observation space will include the actions of other agents
         """
-
-        # Petting Zoo specific stuff
-        # ParallelEnv has a base method `def num_agents()` so we will change the name of this attribute here
-        self._num_agents = num_agents
-
+        self.num_agents = num_agents
         self.base_map = self.ascii_to_numpy(ascii_map)
         self.view_len = view_len
         self.map_padding = view_len
@@ -153,19 +154,19 @@ class MapEnv(ParallelEnv):
                 "other_agent_actions": Box(
                     low=0,
                     high=len(self.all_actions),
-                    shape=(self._num_agents - 1,),
+                    shape=(self.num_agents - 1,),
                     dtype=np.uint8,
                 ),
                 "visible_agents": Box(
                     low=0,
                     high=1,
-                    shape=(self._num_agents - 1,),
+                    shape=(self.num_agents - 1,),
                     dtype=np.uint8,
                 ),
                 "prev_visible_agents": Box(
                     low=0,
                     high=1,
-                    shape=(self._num_agents - 1,),
+                    shape=(self.num_agents - 1,),
                     dtype=np.uint8,
                 ),
             }
@@ -226,13 +227,11 @@ class MapEnv(ParallelEnv):
 
     def step(self, actions):
         """Takes in a dict of actions and converts them to a map update
-
         Parameters
         ----------
         actions: dict {agent-id: int}
             dict of actions, keyed by agent-id that are passed to the agent. The agent
             interprets the int and converts it to a command
-
         Returns
         -------
         observations: dict of arrays representing agent observations
@@ -304,19 +303,19 @@ class MapEnv(ParallelEnv):
             for agent in rewards.keys():
                 rewards[agent] = collective_reward
         if self.inequity_averse_reward:
-            assert self._num_agents > 1, "Cannot use inequity aversion with only one agent!"
+            assert self.num_agents > 1, "Cannot use inequity aversion with only one agent!"
             temp_rewards = rewards.copy()
             for agent in rewards.keys():
                 diff = np.array([r - rewards[agent] for r in rewards.values()])
                 dis_inequity = self.alpha * sum(diff[diff > 0])
                 adv_inequity = self.beta * sum(diff[diff < 0])
-                temp_rewards[agent] -= (dis_inequity + adv_inequity) / (self._num_agents - 1)
+                temp_rewards[agent] -= (dis_inequity + adv_inequity) / (self.num_agents - 1)
             rewards = temp_rewards
 
         dones["__all__"] = np.any(list(dones.values()))
         return observations, rewards, dones, infos
 
-    def reset(self, seed=None):
+    def reset(self) -> MultiAgentDict:
         """Reset the environment.
 
         This method is performed in between rollouts. It resets the state of
@@ -328,9 +327,6 @@ class MapEnv(ParallelEnv):
             the initial observation of the space. The initial reward is assumed
             to be zero.
         """
-        if seed is not None:
-            np.random.seed(seed)
-
         self.beam_pos = []
         self.agents = {}
         self.setup_agents()
@@ -346,7 +342,7 @@ class MapEnv(ParallelEnv):
             # concatenate on the prev_actions to the observations
             if self.return_agent_actions:
                 # No previous actions so just pass in "wait" action
-                prev_actions = np.array([4 for _ in range(self._num_agents - 1)]).astype(np.uint8)
+                prev_actions = np.array([4 for _ in range(self.num_agents - 1)]).astype(np.uint8)
                 visible_agents = self.find_visible_agents(agent.agent_id)
                 observations[agent.agent_id] = {
                     "curr_obs": rgb_arr,
@@ -359,6 +355,8 @@ class MapEnv(ParallelEnv):
                 observations[agent.agent_id] = {"curr_obs": rgb_arr}
         return observations
 
+    def seed(self, seed=None):
+        np.random.seed(seed)
 
     def close(self):
         plt.close()
@@ -397,7 +395,7 @@ class MapEnv(ParallelEnv):
         count_dict = dict(zip(unique, counts))
 
         # check for multiple agents
-        for i in range(self._num_agents):
+        for i in range(self.num_agents):
             if count_dict[chr(i + 1)] != 1:
                 print("Error! Wrong number of agent", i, "in map!")
                 return False
@@ -474,7 +472,6 @@ class MapEnv(ParallelEnv):
 
     def render(self, filename=None, mode="human"):
         """Creates an image of the map to plot or save.
-
         Args:
             filename: If a string is passed, will save the image
                       to disk at this location.
@@ -482,19 +479,9 @@ class MapEnv(ParallelEnv):
         # Shape is (25, 18, 3) right now
 
         rgb_arr = self.full_map_to_colors()
-
-        # Resize numpy array size (25, 18, 3) to (300, 216, 3)
-        # Scale up to 300x216
-        # This largely works except that the resizing isn't quite spot on.
-        rgb_arr = cv2.resize(rgb_arr, (300, 216), interpolation=cv2.INTER_NEAREST)
-
-        # Going to put these two in here for the minute... it might really slow things down but we'll see!
-        plt.cla()
-        plt.imshow(rgb_arr, interpolation="nearest")
         if mode == "human":
-            # plt.cla()
-            # Shape is still (25, 18, 3) right no
-            # plt.imshow(rgb_arr, interpolation="nearest")
+            plt.cla()
+            plt.imshow(rgb_arr, interpolation="nearest")
             if filename is None:
                 plt.show(block=False)
             else:
@@ -946,4 +933,4 @@ class MapEnv(ParallelEnv):
 
     @staticmethod
     def get_environment_callbacks():
-        return callbacks.BaseCallback
+        return DefaultCallbacks
