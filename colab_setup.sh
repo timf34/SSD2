@@ -33,6 +33,7 @@ pip install gym==0.24.0
 pip install wandb
 pip install pygame
 pip install pymunk
+pip install gputil
 
 # Colab comes with 1.12.0 by default, although we have 1.11.0 locally!
 # If Colab:
