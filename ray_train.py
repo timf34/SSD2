@@ -49,6 +49,9 @@ def build_config(args: Config):
     config["env_config"]["func_create"] = env_creator
     config["env_config"]["env_name"] = args.env_name
 
+    # Set the num_gpus to 1
+    config["num_gpus"] = 1
+
     # TODO :see why the conifg for the CNN from MeltingPot didn't work.
 
     # Setup for the neural network.
