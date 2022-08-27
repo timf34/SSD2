@@ -35,6 +35,7 @@ pip install wandb
 pip install pygame
 pip install pymunk
 pip install gputil
+pip install ray[rllib]==2.0.0
 
 # Colab comes with 1.12.0 by default, although we have 1.11.0 locally!
 # If Colab:
