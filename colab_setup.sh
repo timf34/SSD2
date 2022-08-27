@@ -23,12 +23,13 @@ pip install -r wsl_requirements.txt
 # Colab already has 1.12 with cuda 11.3 installed. 
 # pip install torch==1.11.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
 # Individually install certain things
-pip install stable-baselines3==1.5.0
-pip install supersuit==3.5.0
+
+#pip install stable-baselines3==1.5.0
+#pip install supersuit==3.5.0
 pip install tensorboard
 pip install opencv-python
 pip install git+https://github.com/Rohan138/marl-baselines3
-pip install gym==0.24.0
+pip install gym==0.23.1
 # For some reason its not being installed in the `wsl_requirements.txt` file
 pip install wandb
 pip install pygame
