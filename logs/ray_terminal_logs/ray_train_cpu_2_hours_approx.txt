@@ -1,0 +1,227 @@
+Here are the last results after running ray_train.py for about 2 hours (probs a bit more than that)
+
+agent_timesteps_total: 8933400
+counters:
+  num_agent_steps_sampled: 8933400
+  num_agent_steps_trained: 8933400
+  num_env_steps_sampled: 1786680
+  num_env_steps_trained: 1786680
+custom_metrics: {}
+date: 2022-08-28_13-34-43
+done: false
+episode_len_mean: 1000.0
+episode_media: {}
+episode_reward_max: 50.0
+episode_reward_mean: 15.75
+episode_reward_min: -48.0
+episodes_this_iter: 0
+episodes_total: 1782
+experiment_id: 9db0139e76264b00b39ad4676a8edb45
+hostname: timf34
+info:
+  learner:
+    agent-0:
+      custom_metrics: {}
+      learner_stats:
+        allreduce_latency: 0.0
+        cur_lr: 0.0001
+        entropy_coeff: 0.01
+        grad_gnorm: 6.450366973876953
+        policy_entropy: 246.70152282714844
+        policy_loss: -3.1574878692626953
+        vf_loss: 0.03268495947122574
+      model: {}
+      num_agent_steps_trained: 120
+    agent-1:
+      custom_metrics: {}
+      learner_stats:
+        allreduce_latency: 0.0
+        cur_lr: 0.0001
+        entropy_coeff: 0.01
+        grad_gnorm: 9.695545196533203
+        policy_entropy: 242.99130249023438
+        policy_loss: -1.7653999328613281
+        vf_loss: 0.04787273705005646
+      model: {}
+      num_agent_steps_trained: 120
+    agent-2:
+      custom_metrics: {}
+      learner_stats:
+        allreduce_latency: 0.0
+        cur_lr: 0.0001
+        entropy_coeff: 0.01
+        grad_gnorm: 23.780559539794922
+        policy_entropy: 238.5575408935547
+        policy_loss: -8.609261512756348
+        vf_loss: 0.36731669306755066
+      model: {}
+      num_agent_steps_trained: 120
+    agent-3:
+      custom_metrics: {}
+      learner_stats:
+        allreduce_latency: 0.0
+        cur_lr: 0.0001
+        entropy_coeff: 0.01
+        grad_gnorm: 12.084975242614746
+        policy_entropy: 245.46192932128906
+        policy_loss: -0.8941187262535095
+        vf_loss: 0.05494501814246178
+      model: {}
+      num_agent_steps_trained: 120
+    agent-4:
+      custom_metrics: {}
+      learner_stats:
+        allreduce_latency: 0.0
+        cur_lr: 0.0001
+        entropy_coeff: 0.01
+        grad_gnorm: 9.06139850616455
+        policy_entropy: 245.36749267578125
+        policy_loss: -5.1039886474609375
+        vf_loss: 0.05995360389351845
+      model: {}
+      num_agent_steps_trained: 120
+  num_agent_steps_sampled: 8933400
+  num_agent_steps_trained: 8933400
+  num_env_steps_sampled: 1786680
+  num_env_steps_trained: 1786680
+iterations_since_restore: 745
+node_ip: 172.17.250.69
+num_agent_steps_sampled: 8933400
+num_agent_steps_trained: 8933400
+num_env_steps_sampled: 1786680
+num_env_steps_sampled_this_iter: 3120
+num_env_steps_trained: 1786680
+num_env_steps_trained_this_iter: 3120
+num_faulty_episodes: 0
+num_healthy_workers: 6
+num_recreated_workers: 0
+num_steps_trained_this_iter: 3120
+perf:
+  cpu_util_percent: 19.699999999999996
+  gpu_util_percent0: 0.0
+  ram_util_percent: 29.414285714285715
+  vram_util_percent0: 0.0
+pid: 11724
+policy_reward_max:
+  agent-0: 12.0
+  agent-1: 22.0
+  agent-2: 30.0
+  agent-3: 14.0
+  agent-4: 10.0
+policy_reward_mean:
+  agent-0: 1.35
+  agent-1: 3.12
+  agent-2: 6.19
+  agent-3: 2.8
+  agent-4: 2.29
+policy_reward_min:
+  agent-0: -50.0
+  agent-1: -48.0
+  agent-2: -1.0
+  agent-3: -1.0
+  agent-4: -48.0
+sampler_perf:
+  mean_action_processing_ms: 0.1682663560021522
+  mean_env_render_ms: 0.0
+  mean_env_wait_ms: 0.8501724339501681
+  mean_inference_ms: 9.633081895760196
+  mean_raw_obs_processing_ms: 1.493950775616833
+sampler_results:
+  custom_metrics: {}
+  episode_len_mean: 1000.0
+  episode_media: {}
+  episode_reward_max: 50.0
+  episode_reward_mean: 15.75
+  episode_reward_min: -48.0
+  episodes_this_iter: 0
+  hist_stats:
+    episode_lengths: [1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000,
+      1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000,
+      1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000,
+      1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000,
+      1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000,
+      1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000,
+      1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000,
+      1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]
+    episode_reward: [10.0, 19.0, 6.0, 38.0, 30.0, 33.0, 17.0, 19.0, 12.0, 15.0, 49.0,
+      41.0, 5.0, 11.0, 16.0, 16.0, 8.0, 32.0, 24.0, 14.0, 16.0, 27.0, 5.0, 24.0, 45.0,
+      28.0, 17.0, -41.0, 26.0, 4.0, 33.0, 26.0, 9.0, 7.0, 21.0, 24.0, 19.0, 16.0,
+      13.0, 8.0, 24.0, 24.0, 11.0, 13.0, 18.0, 19.0, 13.0, 2.0, 11.0, 20.0, 26.0,
+      16.0, 13.0, 17.0, 4.0, -39.0, 16.0, 3.0, 16.0, 16.0, 9.0, 17.0, -48.0, 17.0,
+      35.0, 26.0, 6.0, 5.0, 8.0, 22.0, -48.0, 13.0, 24.0, -48.0, 16.0, 15.0, 9.0,
+      24.0, 19.0, 42.0, 24.0, 50.0, 24.0, 21.0, 21.0, 22.0, 15.0, 20.0, 0.0, 13.0,
+      16.0, 26.0, 22.0, 14.0, 10.0, 23.0, 38.0, 5.0, 25.0, 38.0]
+    policy_agent-0_reward: [3.0, 2.0, 0.0, 0.0, 6.0, 2.0, 4.0, 3.0, 0.0, 1.0, 2.0,
+      1.0, 0.0, 0.0, 4.0, 3.0, 0.0, 0.0, 11.0, 1.0, 0.0, 11.0, 2.0, 0.0, 0.0, 7.0,
+      3.0, 4.0, 0.0, 2.0, 1.0, 7.0, 3.0, 2.0, 0.0, 2.0, -1.0, 5.0, 4.0, 0.0, 0.0,
+      5.0, 0.0, 5.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 8.0, 2.0, 0.0, 0.0, 0.0, 4.0, 0.0,
+      0.0, 0.0, 6.0, 0.0, 1.0, -50.0, 3.0, 4.0, 0.0, 0.0, 0.0, 1.0, 3.0, 0.0, 1.0,
+      0.0, -49.0, 0.0, 6.0, 0.0, 6.0, 1.0, 0.0, 4.0, 7.0, 7.0, 3.0, 12.0, 3.0, 1.0,
+      1.0, 0.0, 2.0, 2.0, 3.0, 3.0, 6.0, 4.0, 6.0, 3.0, 0.0, 2.0, 11.0]
+    policy_agent-1_reward: [4.0, 2.0, 2.0, 8.0, 14.0, 8.0, 2.0, 6.0, 2.0, 3.0, 11.0,
+      1.0, 1.0, 0.0, 3.0, 1.0, 1.0, 7.0, 11.0, 1.0, 7.0, 0.0, 2.0, 11.0, 2.0, 3.0,
+      4.0, -45.0, 9.0, 1.0, 17.0, 3.0, 2.0, 1.0, 3.0, 4.0, 4.0, 7.0, 2.0, 6.0, 7.0,
+      6.0, 1.0, 3.0, 3.0, 3.0, 5.0, 1.0, 2.0, 8.0, 5.0, 4.0, 0.0, 0.0, 3.0, -48.0,
+      0.0, 0.0, 6.0, 3.0, 5.0, 5.0, 1.0, 7.0, 8.0, 2.0, 2.0, 1.0, 2.0, 4.0, 1.0, 5.0,
+      8.0, 0.0, 3.0, -1.0, 1.0, 0.0, 0.0, 22.0, 8.0, 19.0, 6.0, 5.0, 2.0, 1.0, 7.0,
+      3.0, 0.0, 0.0, 0.0, 9.0, 7.0, 0.0, 6.0, 1.0, 9.0, -1.0, 9.0, 2.0]
+    policy_agent-2_reward: [2.0, 8.0, 2.0, 18.0, 0.0, 13.0, 6.0, 6.0, 6.0, 6.0, 14.0,
+      30.0, 0.0, 6.0, 0.0, 10.0, 5.0, 14.0, 1.0, 6.0, 2.0, 8.0, 1.0, 4.0, 30.0, 7.0,
+      2.0, 1.0, 16.0, 0.0, 8.0, 5.0, 3.0, 3.0, 1.0, 17.0, 12.0, 3.0, 3.0, 0.0, 14.0,
+      10.0, 7.0, 0.0, 4.0, 5.0, 2.0, -1.0, 2.0, 1.0, 8.0, 7.0, 5.0, 12.0, 0.0, 4.0,
+      10.0, 1.0, 7.0, 5.0, 3.0, 8.0, 0.0, 2.0, 12.0, 14.0, 2.0, 4.0, 2.0, 12.0, 0.0,
+      3.0, 5.0, 1.0, 4.0, 5.0, 6.0, 14.0, 8.0, 17.0, 0.0, 22.0, 10.0, 5.0, 0.0, 5.0,
+      3.0, 1.0, 0.0, 3.0, 2.0, 11.0, 5.0, 2.0, 0.0, 9.0, 12.0, 5.0, 14.0, 6.0]
+    policy_agent-3_reward: [0.0, 6.0, 0.0, 10.0, 10.0, 4.0, 2.0, 1.0, 0.0, 1.0, 14.0,
+      1.0, 1.0, 1.0, 9.0, 1.0, 2.0, 1.0, 0.0, 4.0, 0.0, 7.0, 0.0, 0.0, 6.0, 6.0, 4.0,
+      -1.0, 0.0, 0.0, 7.0, 5.0, 1.0, 0.0, 11.0, 0.0, 4.0, 0.0, 3.0, 1.0, 2.0, 0.0,
+      1.0, 2.0, 3.0, 9.0, 5.0, 0.0, 5.0, 7.0, 4.0, 3.0, 6.0, 0.0, 1.0, 0.0, 2.0, 0.0,
+      0.0, 2.0, 1.0, 1.0, 0.0, 0.0, 1.0, 6.0, 1.0, 0.0, 3.0, 1.0, -1.0, 1.0, 5.0,
+      0.0, 4.0, 0.0, 0.0, 4.0, 2.0, 0.0, 11.0, 2.0, 0.0, 0.0, 3.0, 8.0, 1.0, 11.0,
+      0.0, 6.0, 10.0, 1.0, 2.0, 1.0, 0.0, 0.0, 11.0, 1.0, 0.0, 9.0]
+    policy_agent-4_reward: [1.0, 1.0, 2.0, 2.0, 0.0, 6.0, 3.0, 3.0, 4.0, 4.0, 8.0,
+      8.0, 3.0, 4.0, 0.0, 1.0, 0.0, 10.0, 1.0, 2.0, 7.0, 1.0, 0.0, 9.0, 7.0, 5.0,
+      4.0, 0.0, 1.0, 1.0, 0.0, 6.0, 0.0, 1.0, 6.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 3.0,
+      2.0, 3.0, 8.0, 1.0, 0.0, 1.0, 2.0, 4.0, 1.0, 0.0, 2.0, 5.0, 0.0, 1.0, 4.0, 2.0,
+      3.0, 0.0, 0.0, 2.0, 1.0, 5.0, 10.0, 4.0, 1.0, 0.0, 0.0, 2.0, -48.0, 3.0, 6.0,
+      0.0, 5.0, 5.0, 2.0, 0.0, 8.0, 3.0, 1.0, 0.0, 1.0, 8.0, 4.0, 5.0, 3.0, 4.0, 0.0,
+      2.0, 2.0, 2.0, 5.0, 5.0, 0.0, 7.0, 3.0, 0.0, 0.0, 10.0]
+  num_faulty_episodes: 0
+  policy_reward_max:
+    agent-0: 12.0
+    agent-1: 22.0
+    agent-2: 30.0
+    agent-3: 14.0
+    agent-4: 10.0
+  policy_reward_mean:
+    agent-0: 1.35
+    agent-1: 3.12
+    agent-2: 6.19
+    agent-3: 2.8
+    agent-4: 2.29
+  policy_reward_min:
+    agent-0: -50.0
+    agent-1: -48.0
+    agent-2: -1.0
+    agent-3: -1.0
+    agent-4: -48.0
+  sampler_perf:
+    mean_action_processing_ms: 0.1682663560021522
+    mean_env_render_ms: 0.0
+    mean_env_wait_ms: 0.8501724339501681
+    mean_inference_ms: 9.633081895760196
+    mean_raw_obs_processing_ms: 1.493950775616833
+time_since_restore: 7654.690106153488
+time_this_iter_s: 10.337725162506104
+time_total_s: 7654.690106153488
+timers:
+  learn_throughput: 830.508
+  learn_time_ms: 144.49
+  synch_weights_time_ms: 4.915
+  training_iteration_time_ms: 387.533
+timestamp: 1661690083
+timesteps_since_restore: 0
+timesteps_total: 1786680
+training_iteration: 745
+trial_id: default
+warmup_time: 16.194687366485596
