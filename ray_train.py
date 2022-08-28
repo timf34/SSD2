@@ -115,7 +115,7 @@ def training_script(args: Config):
             print(pretty_print(result))
 
             if i % 100 == 0:
-                checkpoint = algo.save()
+                checkpoint = algo.save("ray_results/tmp")
                 print("checkpoint saved at", checkpoint)
     else:
         # ray.init(local_mode=True)
@@ -131,9 +131,9 @@ def training_script(args: Config):
                                                             log_config=False,
                                                             save_checkpoints=True)
                                      ],
-                                     local_dir="tmp/mypath",
+                                     local_dir="ray_results/cleanup",
                                      checkpoint_config=air.CheckpointConfig(num_to_keep=100,
-                                                                            checkpoint_frequency=1,
+                                                                            checkpoint_frequency=200,
                                                                             checkpoint_at_end=True)
             )
         )
