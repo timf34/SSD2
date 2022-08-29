@@ -14,11 +14,14 @@ from social_dilemmas.config.default_args import add_default_args
 from social_dilemmas.envs.env_creator import get_env_creator
 
 from config.configuration import Config
+from custom_callback import CustomCallback
 
 USE_TUNE = True
 
 WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
-wandb.login(key=WANDB_API_KEY)
+# wandb.login(key=WANDB_API_KEY)
+# wandb.init(mode='online', project='Ray Testing')
+
 
 def configure_model(config: Dict) -> Dict:
     """
@@ -43,9 +46,11 @@ def configure_model(config: Dict) -> Dict:
 def configure_config(env_creator, args, policy_graphs, policy_mapping_fn) -> Dict:
     config = A3CConfig().to_dict()
 
-    config["num_workers"] = 1  # args.num_cpus
+    config["num_workers"] = 16  # args.num_cpus
     config["framework"] = "torch"
     config["env"] = args.env_name
+    config["callbacks"] = CustomCallback
+    config["keep_per_episode_custom_metrics"] = False  # keep custom metrics + log pure metric, not mean, max, mean, etc.
 
     # information for replay - not sure why we need this
     config["env_config"]["func_create"] = env_creator
@@ -126,7 +131,7 @@ def training_script(args: Config):
             run_config=air.RunConfig(name="testingA3C",
                                      stop=stop,
                                      callbacks=[
-                                        WandbLoggerCallback(api_key=WANDB_API_KEY,
+                                         WandbLoggerCallback(api_key=WANDB_API_KEY,
                                                             project="Ray Testing",
                                                             log_config=False,
                                                             save_checkpoints=True)
