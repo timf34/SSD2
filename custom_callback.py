@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional, Union
-
+import wandb 
 import ray
 from ray import air, tune
 from ray.rllib.algorithms.callbacks import DefaultCallbacks
@@ -8,6 +8,9 @@ from ray.rllib.evaluation import Episode, RolloutWorker
 from ray.rllib.policy import Policy
 from ray.rllib.utils.typing import PolicyID
 from ray.rllib.policy.sample_batch import SampleBatch
+
+
+WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
 
 
 class CustomCallback(DefaultCallbacks):
@@ -33,12 +36,10 @@ class CustomCallback(DefaultCallbacks):
         print(f"episode {episode.episode_id} (env-idx={env_index}) started.")
         # agent_ids = episode.get_agents() # Ok so the agents aren't initialized here yet... this returns []
         agent_ids = ["agent-0", "agent-1", "agent-2", "agent-3", "agent-4"] # hardcoding for now...
-        print("here are our agent ids", agent_ids)
         episode.user_data["agent_actions"] = {}
         for i in agent_ids:
             print("agent id ", i)
             episode.user_data["agent_actions"][i] = []
-            print("ep user data", episode.user_data["agent_actions"])
 
     def on_episode_step(
         self,
@@ -52,11 +53,6 @@ class CustomCallback(DefaultCallbacks):
         agent_ids = episode.get_agents()
 
         for agent_id in agent_ids:
-            print(agent_id, episode.last_action_for(agent_id))
-            print("episode.user data", episode.user_data)
-            # if agent_id not in episode.user_data["agent_actions"]:
-            #     # I shouldn't have to do this but I seem to be getting a key error despite `on_episode_start` above
-            #     episode.user_data["agent_actions"] = {agent_id: []}
             episode.user_data["agent_actions"][agent_id].append(episode.last_action_for(agent_id))
 
     def on_episode_end(
@@ -69,8 +65,20 @@ class CustomCallback(DefaultCallbacks):
         **kwargs,
     ) -> None:
         agent_ids = episode.get_agents()
+        print("check agent ids", agent_ids)
+        agent_ids = ["agent-0", "agent-1", "agent-2", "agent-3", "agent-4"] # hardcoding for now...
+        print("checking again", agent_ids) # TODO: not sure why but the get_agents() function isn't working.
         for agent_id in agent_ids:
             # implement logic here to log agent actions (which are in agent.py)
             # Note that I think permanent data gets stored in `episode.custom_metrics`
+            # if not episode.custom_metrics[agent_id]: # Its per episode! So this doesn't matter. We can reinit it each time!
+            # episode.custom_metrics[agent_id] = {"beam_fired" : [], "cleaning" : []}
+            print("ptinting type", type(episode.user_data["agent_actions"][agent_id][0]))
+            print("type dawg", type(episode.user_data["agent_actions"][agent_id].count(7)))
+            episode.custom_metrics[f"{agent_id}-beam_fired"] = float(episode.user_data["agent_actions"][agent_id].count(7))
+            episode.custom_metrics[f"{agent_id}-cleaning"] = float(episode.user_data["agent_actions"][agent_id].count(8))
+            wandb.log({"dog": 3.5})
+
             print("here we are", agent_id, episode.user_data["agent_actions"][agent_id])
+            print("and here", episode.custom_metrics)
 
