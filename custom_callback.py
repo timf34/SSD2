@@ -72,9 +72,9 @@ class CustomCallback(DefaultCallbacks):
     ) -> None:
 
         agent_ids = episode.get_agents()
-        print("check agent ids", agent_ids)
+        # print("check agent ids", agent_ids)
         agent_ids = ["agent-0", "agent-1", "agent-2", "agent-3", "agent-4"]  # hardcoding for now...
-        print("checking again", agent_ids)  # TODO: not sure why but the get_agents() function isn't working.
+        # print("checking again", agent_ids)  # TODO: not sure why but the get_agents() function isn't working.
 
         for agent_id in agent_ids:
             # implement logic here to log agent actions (which are in agent.py)
@@ -91,24 +91,24 @@ class CustomCallback(DefaultCallbacks):
                 episode.user_data["agent_actions"][agent_id].count(8))
 
             # reward specific metrics
-            episode.custom_metrics[f"{agent_id}-beam_fired"] = episode.user_data["agent_rewards"][agent_id].count(-1)
+            episode.custom_metrics[f"{agent_id}-firing_beam_fired"] = episode.user_data["agent_rewards"][agent_id].count(-1)
             episode.custom_metrics[f"{agent_id}-beam_hit"] = episode.user_data["agent_rewards"][agent_id].count(-50)
             episode.custom_metrics[f"{agent_id}-apples_consumed"] = episode.user_data["agent_rewards"][agent_id].count(1)
 
-            # try:
-                # This won't be accepted as I believe this callback is called before the WANDB callback which calls
-                # wandb.init(). I have tried running wandb.init at the start of the `ray_train.py` script but it doenst
-                # work. This is a decent workaround for now. I still don't know why the custom metrics won't log
-                # when I set keep_per_episode_custom_metrics to True... I think it might be something in the way that
-                # the logger output is nested perhaps
-                # Yep so this doesn't work either:')
-                # I might just use the mean, max, mins for now... or edit the source file direclty (I was hesitant to
-                # do that as I'm not sure how easy it'll be to do that in AWS but we can give it a go. tmrw though, its
-                # too late now.
-                # wandb.log({"hio": 423})
-                # TODO: this doesn't work either. Note that the notes/ state of the codebase is from an all nighter.
-            # except Exception:
-            #     pass
-
-        print("here we are", agent_id, episode.user_data["agent_actions"][agent_id])
+        #     # try:
+        #         # This won't be accepted as I believe this callback is called before the WANDB callback which calls
+        #         # wandb.init(). I have tried running wandb.init at the start of the `ray_train.py` script but it doenst
+        #         # work. This is a decent workaround for now. I still don't know why the custom metrics won't log
+        #         # when I set keep_per_episode_custom_metrics to True... I think it might be something in the way that
+        #         # the logger output is nested perhaps
+        #         # Yep so this doesn't work either:')
+        #         # I might just use the mean, max, mins for now... or edit the source file direclty (I was hesitant to
+        #         # do that as I'm not sure how easy it'll be to do that in AWS but we can give it a go. tmrw though, its
+        #         # too late now.
+        #         # wandb.log({"hio": 423})
+        #         # TODO: this doesn't work either. Note that the notes/ state of the codebase is from an all nighter.
+        #     # except Exception:
+        #     #     pass
+        #
+        # print("here we are", agent_id, episode.user_data["agent_actions"][agent_id])
         print("and here", episode.custom_metrics)
