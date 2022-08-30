@@ -1,4 +1,7 @@
 import ray
+import os
+import torch
+
 from ray import air, tune
 from ray.rllib.models import ModelCatalog
 from ray.tune.registry import register_env
@@ -57,10 +60,9 @@ def configure_config(env_creator, args, policy_graphs, policy_mapping_fn) -> Dic
         "keep_per_episode_custom_metrics"] = False  # keep custom metrics + log pure metric, not mean, max, mean, etc.
 
     # hardware
-    config["num_workers"] = 1  # args.num_cpus
-    config["num_gpus"] = 0
-    config["num_cpus_per_worker"] = 1
-    config["num_gpus_per_worker"] = 0
+    config["num_workers"] = 2  # args.num_cpus
+    config["num_gpus"] = 1
+    # config["num_gpus_per_worker"] = 1
 
     # information for replay - not sure why we need this
     config["env_config"]["func_create"] = env_creator
@@ -84,6 +86,8 @@ def training_script(args: Config):
 
     register_env(args.env_name, env_creator)
 
+    print("in the training script, lets check cuda", torch.cuda.is_available())
+
     # Get the observation and action space sizes
     # Note: this could be tidier... do I really have to initialize the environment here?
     single_env = env_creator(args.num_agents)
@@ -97,8 +101,9 @@ def training_script(args: Config):
         return agent_id
 
     # Each policy can have a different configuration (including custom model)
+    # TODO: check if its ok to pass an empty config here.
     def gen_policy():
-        return None, obs_space, act_space, {"custom_model": args.algo_name}
+        return None, obs_space, act_space, {}
 
     # Create 1 distinct policy per agent
     policy_graphs = {}
@@ -112,14 +117,24 @@ def training_script(args: Config):
         "timesteps_total": 2e8
     }
 
-    algo = A3C(env=args.env_name, config=config)
-
     print(config)
 
-    ray.init(ignore_reinit_error=True, num_cpus=10)
+    # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+    # print("os.environ ", os.environ)
 
-    # ray.init(local_mode=True)
-    # ray.init()
+
+    # print("CUDA_VISIBLE_DEVICES: {}".format(os.environ["CUDA_VISIBLE_DEVICES"]))
+
+    # Note that apparently this will always return an empty list here... not
+    # print(" from main: ray.get_gpu_ids(): {}".format(ray.get_gpu_ids()))
+    # @ray.remote(num_gpus=1)
+    # def f():
+    #     print("ray.get_gpu_ids(): {}".format(ray.get_gpu_ids()))
+    # f.remote()  # This works and prints [0]... so ray is indeed getting the GPUs
+
+    # algo = A3C(env=args.env_name, config=config)
+
+    ray.init(ignore_reinit_error=True, num_cpus=2, num_gpus=1)
     tuner = ray.tune.Tuner \
             (
             trainable="A3C",
@@ -138,7 +153,7 @@ def training_script(args: Config):
                                                                             checkpoint_at_end=True)
                                      )
             )
-    tuner.fit()
+    result = tuner.fit()
 
 
 def main():
