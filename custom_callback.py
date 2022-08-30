@@ -36,7 +36,6 @@ class CustomCallback(DefaultCallbacks):
         episode.user_data["agent_rewards"] = {}
 
         for i in agent_ids:
-            print("agent id ", i)
             episode.user_data["agent_actions"][i] = []
             episode.user_data["agent_rewards"][i] = []
 
