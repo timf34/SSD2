@@ -9,10 +9,17 @@ from ray.rllib.algorithms.a3c import A3CConfig, A3C
 from ray.tune.logger import pretty_print
 from ray.tune.integration.wandb import WandbLoggerCallback
 
+from ray.rllib.examples.models.centralized_critic_models import (
+    YetAnotherCentralizedCriticModel,
+    YetAnotherTorchCentralizedCriticModel,
+)
+
 from typing import Dict
 import wandb
 
 from social_dilemmas.envs.env_creator import get_env_creator
+
+from models.ray_basic_torch_cnn import CustomCNNBasic, CustomCNN_rllib, CustomCNN_visionnet
 
 from config.configuration import Config
 from custom_callback import CustomCallback
@@ -20,6 +27,7 @@ from custom_callback import CustomCallback
 USE_TUNE = True
 
 WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
+WANDB_MODE = 'disabled'
 
 
 # wandb.login(key=WANDB_API_KEY)
@@ -40,10 +48,22 @@ def configure_model(config: Dict) -> Dict:
     config["model"] = {"conv_filters": [[6, [3, 3], 1]],
                        "conv_activation": "relu",
                        "fcnet_hiddens": [32, 32],
+                       # "post_fcnet_hiddens" : [32, 32],
                        "use_lstm": True,
                        "lstm_use_prev_action": True,
                        "lstm_use_prev_reward": False,
                        "lstm_cell_size": 128}
+    return config
+
+
+def configure_custom_model(config: Dict) -> Dict:
+
+    ModelCatalog.register_custom_model(
+        "custom_cnn",
+        CustomCNN_visionnet
+    )
+    config["model"]["custom_model"] = "custom_cnn"
+
     return config
 
 
@@ -60,7 +80,7 @@ def configure_config(env_creator, args, policy_graphs, policy_mapping_fn) -> Dic
         "keep_per_episode_custom_metrics"] = False  # keep custom metrics + log pure metric, not mean, max, mean, etc.
 
     # hardware
-    config["num_workers"] = 2  # args.num_cpus
+    config["num_workers"] = 1  # args.num_cpus
     config["num_gpus"] = 1
     # config["num_gpus_per_worker"] = 1
 
@@ -69,7 +89,8 @@ def configure_config(env_creator, args, policy_graphs, policy_mapping_fn) -> Dic
     config["env_config"]["env_name"] = args.env_name
 
     # configure model
-    config = configure_model(config)
+    # config = configure_model(config)
+    config = configure_custom_model(config)
 
     # Multi-agents
     config["multiagent"] = {"policies": policy_graphs, "policy_mapping_fn": policy_mapping_fn}
@@ -93,6 +114,12 @@ def training_script(args: Config):
     single_env = env_creator(args.num_agents)
     obs_space = single_env.observation_space
     act_space = single_env.action_space
+
+    # print("obs space", obs_space, "act space", act_space)
+    # print("obs space", obs_space["curr_obs"].shape, "act space", act_space.shape)
+    # space Dict(curr_obs:Box(0, 255, (15, 15, 3), uint8), other_agent_actions:Box(0, 9, (4,), uint8), prev_visible_agents:Box(0, 1, (4,), uint8), visible_agents:Box(0, 1, (4,), uint8)) act space Discrete(9)
+    # obs space (15, 15, 3) act space ()
+
     # deleting (necessary?)
     del single_env
 
@@ -113,15 +140,11 @@ def training_script(args: Config):
     config = configure_config(env_creator, args, policy_graphs, policy_mapping_fn)
 
     stop = {
-        "training_iteration": 10000,
+        "training_iteration": 10000, # TODO: 10k will stop at about 27 million agent steps -> change this. or just use total timesteps
         "timesteps_total": 2e8
     }
 
     print(config)
-
-    # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-    # print("os.environ ", os.environ)
-
 
     # print("CUDA_VISIBLE_DEVICES: {}".format(os.environ["CUDA_VISIBLE_DEVICES"]))
 
@@ -134,7 +157,9 @@ def training_script(args: Config):
 
     # algo = A3C(env=args.env_name, config=config)
 
-    ray.init(ignore_reinit_error=True, num_cpus=2, num_gpus=1)
+    ray.init(num_gpus=1)
+    # Note that I might not want ingore reinit error... it seems to get stuck on pending a lot.
+    # ray.init(ignore_reinit_error=True, num_cpus=2, num_gpus=1)
     tuner = ray.tune.Tuner \
             (
             trainable="A3C",

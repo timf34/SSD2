@@ -1,16 +1,21 @@
 from typing import Tuple, List, Any, Dict
+import numpy as np
 
-import torch
-import torch.nn as nn
+
+# import torch
+# # import torch.nn as nn
 import torch.nn.functional as F
 
 import gym as gym
+from gym.spaces import Discrete
+from gym.spaces import Box
 import numpy as np
 
 import os
 import datetime
 
 from ray.rllib.models.torch.torch_modelv2 import TorchModelV2
+from ray.rllib.models.torch.visionnet import VisionNetwork
 from ray.rllib.models.torch.misc import (
     normc_initializer,
     same_padding,
@@ -23,8 +28,12 @@ from ray.rllib.models.utils import get_activation_fn, get_filter_config
 from ray.rllib.utils.annotations import override
 from ray.rllib.utils.typing import ModelConfigDict, TensorType
 
+from ray.rllib.utils.framework import try_import_torch
+
 # TODO: not sure if this is working, and not sure what the best way is to test it, but going to move on to implementing
 # the envs for now.
+
+torch, nn = try_import_torch()
 
 
 # This is the model config:
@@ -40,7 +49,7 @@ from ray.rllib.utils.typing import ModelConfigDict, TensorType
 
 
 # Use this with lambda wrapper returning observations only
-class CustomCNN(TorchModelV2, nn.Module):
+class CustomCNN_rllib(TorchModelV2, torch.nn.Module):
     """
     Configuring this basic model... hopefully this will work on the GPU .
     :param observation_space: (gym.Space)
@@ -58,14 +67,12 @@ class CustomCNN(TorchModelV2, nn.Module):
         TorchModelV2.__init__(
             self, obs_space, action_space, num_outputs, model_config, name
         )
-        nn.Module.__init__(self)
+        torch.nn.Module.__init__(self)
 
         activation = self.model_config.get("conv_activation")
-        filters = self.model_config["conv_filters"]
-        assert len(filters) > 0, "Must provide at least 1 entry in `conv_filters`!"
-
-        activation = self.model_config.get("conv_activation")
-        filters = self.model_config["conv_filters"]
+        filters = [[6, [3, 3], 1]]  # just hardcoding for now
+        # filters = self.model_config["conv_filters"]
+        print("filters", len(filters), filters)
         assert len(filters) > 0, "Must provide at least 1 entry in `conv_filters`!"
 
         # Post FC net config.
@@ -84,7 +91,7 @@ class CustomCNN(TorchModelV2, nn.Module):
         self._logits = None
 
         layers = []
-        (w, h, in_channels) = obs_space.shape
+        (w, h, in_channels) = obs_space["curr_obs"].shape
 
         in_size = [w, h]
 
@@ -299,3 +306,121 @@ class CustomCNN(TorchModelV2, nn.Module):
             return logits, state
         else:
             return conv_out, state
+
+
+class CustomCNNBasic(TorchModelV2, torch.nn.Module):
+    def __init__(self,
+               obs_space: gym.spaces.Space,
+               action_space: gym.spaces.Space,
+               num_outputs: int,
+               model_config: ModelConfigDict,
+               name: str,
+               ):
+        TorchModelV2.__init__(
+            self,
+            obs_space,
+            action_space,
+            num_outputs,
+            model_config,
+            name,
+        )
+        torch.nn.Module.__init__(self)
+
+        # (w, h, in_channels) = obs_space.shape
+        in_channels=3
+        self.conv = nn.Conv2d(
+            in_channels=in_channels,
+            out_channels=6,
+            kernel_size=[3, 3],
+            stride=1,
+            padding='valid',
+        )
+        self.fc1 = nn.Linear(in_features=32448, out_features=32)
+        self.fc2 = nn.Linear(in_features=32, out_features=32)
+
+        print("total params: ", sum(p.numel() for p in self.parameters()))
+
+    @override(TorchModelV2)
+    def forward(
+            self,
+            input_dict: Dict[str, TensorType],
+            state: List[TensorType],
+            seq_lens: TensorType,
+    ) -> (TensorType, List[TensorType]):
+        print("here is our input dict", input_dict)
+
+        # obs = input_dict["obs_flat"].float()
+        # obs.reshape(obs.shape[0], -1)
+
+        # TODO: I really need to figure out how to step through this... it would make things so much easier
+
+        # TODO: note that I think we are getting clsoer...
+
+        print("input dict", input_dict["obs"])
+        features = input_dict["obs"]["curr_obs"]
+        # Permute b/c data comes in as [B, dim, dim, channels]:
+        features = features.permute(0, 3, 1, 2)
+        features = torch.flatten((F.relu(self.conv(features))))
+
+        features = F.relu(self.fc1(features))
+        features = F.relu(self.fc2(features))
+        return features, state
+
+
+class CustomCNN_visionnet(TorchModelV2, torch.nn.Module):
+        def __init__(self,
+                     obs_space: gym.spaces.Space,
+                     action_space: gym.spaces.Space,
+                     num_outputs: int,
+                     model_config: ModelConfigDict,
+                     name: str,
+                     ):
+            num_outputs = 9
+            TorchModelV2.__init__(
+                self,
+                obs_space,
+                action_space,
+                num_outputs,
+                model_config,
+                name,
+            )
+            torch.nn.Module.__init__(self)
+            model_config = {
+                "conv_filters" : [[6, [3, 3], 1], [6, [15, 15], 1]],
+                "conv_activation" : "relu",
+                "no_final_linear" : True,
+                # "post_fcnet_hiddens" : [32, 1014]
+            }
+
+            self.base_model = VisionNetwork(
+                Box(0, 255, (15, 15, 3), np.uint8),
+                action_space,
+                num_outputs,
+                model_config,
+                "yo_dawg"
+            )
+
+        def forward(self,
+                    input_dict: Dict[str, TensorType],
+                    state: List[TensorType],
+                    seq_lens: TensorType,
+        ) -> (TensorType, List[TensorType]):
+            return self.base_model({"obs": input_dict["obs"]["curr_obs"]}, state, seq_lens)
+
+        @override(TorchModelV2)
+        def value_function(self) -> TensorType:
+            return self.base_model.value_function()
+
+
+def tes_cnn():
+    obs_space = {"curr_obs": Box(0, 255, (15, 15, 3), np.uint8), "other_agent_actions":Box(0, 9, (4,), np.uint8), "prev_visible_agents":Box(0, 1, (4,), np.uint8), "visible_agents":Box(0, 1, (4,), np.uint8)}
+    act_space = Discrete(9)
+
+    x = CustomCNNBasic(obs_space=obs_space, action_space=act_space, num_outputs=9, model_config={}, name="yo")
+    # print model params
+    params = sum(p.numel() for p in x.parameters())
+    print(params)
+
+
+if __name__ == '__main__':
+    tes_cnn()
