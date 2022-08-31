@@ -140,8 +140,7 @@ def training_script(args: Config):
     config = configure_config(env_creator, args, policy_graphs, policy_mapping_fn)
 
     stop = {
-        "training_iteration": 10000, # TODO: 10k will stop at about 27 million agent steps -> change this. or just use total timesteps
-        "timesteps_total": 2e8
+        "timesteps_total": 2e8  # Note that 10k training iterations is about 27 million agent steps
     }
 
     print(config)
