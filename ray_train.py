@@ -145,17 +145,6 @@ def training_script(args: Config):
 
     print(config)
 
-    # print("CUDA_VISIBLE_DEVICES: {}".format(os.environ["CUDA_VISIBLE_DEVICES"]))
-
-    # Note that apparently this will always return an empty list here... not
-    # print(" from main: ray.get_gpu_ids(): {}".format(ray.get_gpu_ids()))
-    # @ray.remote(num_gpus=1)
-    # def f():
-    #     print("ray.get_gpu_ids(): {}".format(ray.get_gpu_ids()))
-    # f.remote()  # This works and prints [0]... so ray is indeed getting the GPUs
-
-    # algo = A3C(env=args.env_name, config=config)
-
     ray.init(num_gpus=1)
     # Note that I might not want ingore reinit error... it seems to get stuck on pending a lot.
     # ray.init(ignore_reinit_error=True, num_cpus=2, num_gpus=1)
