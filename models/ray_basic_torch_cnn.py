@@ -1,9 +1,5 @@
 from typing import Tuple, List, Any, Dict
 import numpy as np
-
-
-# import torch
-# # import torch.nn as nn
 import torch.nn.functional as F
 
 import gym as gym
@@ -22,16 +18,13 @@ from ray.rllib.models.torch.misc import (
     SlimConv2d,
     SlimFC,
 )
-from torch import nn, Tensor
+from torch import nn
 
 from ray.rllib.models.utils import get_activation_fn, get_filter_config
 from ray.rllib.utils.annotations import override
 from ray.rllib.utils.typing import ModelConfigDict, TensorType
 
 from ray.rllib.utils.framework import try_import_torch
-
-# TODO: not sure if this is working, and not sure what the best way is to test it, but going to move on to implementing
-# the envs for now.
 
 torch, nn = try_import_torch()
 
@@ -48,7 +41,7 @@ torch, nn = try_import_torch()
 #                        "lstm_cell_size": 128}
 
 
-# Use this with lambda wrapper returning observations only
+# This is basically a clone of the Torch VisionNet from RLLIB
 class CustomCNN_rllib(TorchModelV2, torch.nn.Module):
     """
     Configuring this basic model... hopefully this will work on the GPU .
@@ -354,8 +347,6 @@ class CustomCNNBasic(TorchModelV2, torch.nn.Module):
 
         # TODO: I really need to figure out how to step through this... it would make things so much easier
 
-        # TODO: note that I think we are getting clsoer...
-
         print("input dict", input_dict["obs"])
         features = input_dict["obs"]["curr_obs"]
         # Permute b/c data comes in as [B, dim, dim, channels]:
@@ -366,7 +357,6 @@ class CustomCNNBasic(TorchModelV2, torch.nn.Module):
         features = F.relu(self.fc2(features))
         return features, state
 
-
 class CustomCNN_visionnet(TorchModelV2, torch.nn.Module):
         def __init__(self,
                      obs_space: gym.spaces.Space,
@@ -375,7 +365,7 @@ class CustomCNN_visionnet(TorchModelV2, torch.nn.Module):
                      model_config: ModelConfigDict,
                      name: str,
                      ):
-            num_outputs = 9
+            # num_outputs = 9
             TorchModelV2.__init__(
                 self,
                 obs_space,
@@ -385,6 +375,8 @@ class CustomCNN_visionnet(TorchModelV2, torch.nn.Module):
                 name,
             )
             torch.nn.Module.__init__(self)
+
+            # Note: the 15 x 15 kernels are to flatten the output to dimension 1.
             model_config = {
                 "conv_filters" : [[6, [3, 3], 1], [6, [15, 15], 1]],
                 "conv_activation" : "relu",
@@ -412,15 +404,29 @@ class CustomCNN_visionnet(TorchModelV2, torch.nn.Module):
             return self.base_model.value_function()
 
 
+def print_model_params(_model) -> None:
+    _sum = sum(p.numel() for p in _model.parameters())
+    print(f"total parameters {_sum}")
+
+
 def tes_cnn():
-    obs_space = {"curr_obs": Box(0, 255, (15, 15, 3), np.uint8), "other_agent_actions":Box(0, 9, (4,), np.uint8), "prev_visible_agents":Box(0, 1, (4,), np.uint8), "visible_agents":Box(0, 1, (4,), np.uint8)}
+
+    # sample input... "curr_obs" is what is inputed through `def forward()`
+    obs_space = { "obs" : {"curr_obs": Box(0, 255, (15, 15, 3), np.uint8),
+                 "other_agent_actions":Box(0, 9, (4,), np.uint8),
+                 "prev_visible_agents":Box(0, 1, (4,), np.uint8),
+                 "visible_agents":Box(0, 1, (4,), np.uint8)}}
+    # This is also generally equal to the number of outputs I think
     act_space = Discrete(9)
 
-    x = CustomCNNBasic(obs_space=obs_space, action_space=act_space, num_outputs=9, model_config={}, name="yo")
-    # print model params
-    params = sum(p.numel() for p in x.parameters())
-    print(params)
+    # x = CustomCNNBasic(obs_space=obs_space, action_space=act_space, num_outputs=9, model_config={}, name="yo")
+    x = CustomCNN_visionnet(obs_space=obs_space, action_space=act_space, num_outputs=9, model_config={}, name="yo")
+
+    print_model_params(x)
+
+
 
 
 if __name__ == '__main__':
+
     tes_cnn()
