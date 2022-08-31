@@ -9,11 +9,6 @@ from ray.rllib.algorithms.a3c import A3CConfig, A3C
 from ray.tune.logger import pretty_print
 from ray.tune.integration.wandb import WandbLoggerCallback
 
-from ray.rllib.examples.models.centralized_critic_models import (
-    YetAnotherCentralizedCriticModel,
-    YetAnotherTorchCentralizedCriticModel,
-)
-
 from typing import Dict
 import wandb
 
@@ -28,6 +23,8 @@ USE_TUNE = True
 
 WANDB_API_KEY = '83230c40e1c562f3ef56bf082e31911eaaad4ed9'
 WANDB_MODE = 'disabled'
+
+USE_CUSTOM_MODEL: bool = True
 
 
 # wandb.login(key=WANDB_API_KEY)
@@ -76,12 +73,11 @@ def configure_config(env_creator, args, policy_graphs, policy_mapping_fn) -> Dic
     config["framework"] = "torch"
     config["env"] = args.env_name
     config["callbacks"] = CustomCallback
-    config[
-        "keep_per_episode_custom_metrics"] = False  # keep custom metrics + log pure metric, not mean, max, mean, etc.
+    config["keep_per_episode_custom_metrics"] = False  # keep custom metrics + log pure metric, not mean, max, etc.
 
     # hardware
     config["num_workers"] = 1  # args.num_cpus
-    config["num_gpus"] = 1
+    config["num_gpus"] = 0
     # config["num_gpus_per_worker"] = 1
 
     # information for replay - not sure why we need this
@@ -89,8 +85,10 @@ def configure_config(env_creator, args, policy_graphs, policy_mapping_fn) -> Dic
     config["env_config"]["env_name"] = args.env_name
 
     # configure model
-    # config = configure_model(config)
-    config = configure_custom_model(config)
+    if USE_CUSTOM_MODEL:
+        config = configure_custom_model(config)
+    else:
+        config = configure_model(config)
 
     # Multi-agents
     config["multiagent"] = {"policies": policy_graphs, "policy_mapping_fn": policy_mapping_fn}
@@ -128,7 +126,6 @@ def training_script(args: Config):
         return agent_id
 
     # Each policy can have a different configuration (including custom model)
-    # TODO: check if its ok to pass an empty config here.
     def gen_policy():
         return None, obs_space, act_space, {}
 
