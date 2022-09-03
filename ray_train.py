@@ -14,7 +14,9 @@ import wandb
 
 from social_dilemmas.envs.env_creator import get_env_creator
 
-from models.ray_basic_torch_cnn import CustomCNNBasic, CustomCNN_rllib, CustomCNN_visionnet
+# from models.ray_basic_torch_cnn import CustomCNN_visionnet_hardcoded
+from models.ray_model_testing import CustomCNN_visionnet_hardcoded
+
 
 from config.configuration import Config
 from custom_callback import CustomCallback
@@ -41,7 +43,6 @@ def configure_model(config: Dict) -> Dict:
     # The final layer must be chosen specifically so that its output is [B, 1, 1, X]. See the explanation in
     # https://docs.ray.io/en/latest/rllib-models.html#built-in-models.
     # It is because rllib is unable to flatten to a vector otherwise.
-    # TODO: check if this might be a source of error for running on the GPU
     config["model"] = {"conv_filters": [[6, [3, 3], 1]],
                        "conv_activation": "relu",
                        "fcnet_hiddens": [32, 32],
@@ -57,7 +58,7 @@ def configure_custom_model(config: Dict) -> Dict:
 
     ModelCatalog.register_custom_model(
         "custom_cnn",
-        CustomCNN_visionnet
+        CustomCNN_visionnet_hardcoded
     )
     config["model"]["custom_model"] = "custom_cnn"
 
@@ -77,7 +78,7 @@ def configure_config(env_creator, args, policy_graphs, policy_mapping_fn) -> Dic
 
     # hardware
     config["num_workers"] = 1  # args.num_cpus
-    config["num_gpus"] = 0
+    config["num_gpus"] = 1
     # config["num_gpus_per_worker"] = 1
 
     # information for replay - not sure why we need this
@@ -127,7 +128,7 @@ def training_script(args: Config):
 
     # Each policy can have a different configuration (including custom model)
     def gen_policy():
-        return None, obs_space, act_space, {}
+        return None, obs_space, act_space, {"custom_model" : "custom_cnn"}
 
     # Create 1 distinct policy per agent
     policy_graphs = {}
