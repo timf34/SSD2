@@ -376,6 +376,8 @@ class CustomCNN_visionnet(TorchModelV2, torch.nn.Module):
             )
             torch.nn.Module.__init__(self)
 
+            print("note that we are using the model with kernel size of 15!!!!")
+
             # Note: the 15 x 15 kernels are to flatten the output to dimension 1.
             model_config = {
                 "conv_filters" : [[6, [3, 3], 1], [6, [15, 15], 1]],
@@ -404,6 +406,93 @@ class CustomCNN_visionnet(TorchModelV2, torch.nn.Module):
             return self.base_model.value_function()
 
 
+class CustomCNN_visionnet_hardcoded(TorchModelV2, torch.nn.Module):
+    def __init__(self,
+                 obs_space: gym.spaces.Space,
+                 action_space: gym.spaces.Space,
+                 num_outputs: int,
+                 model_config: ModelConfigDict,
+                 name: str,
+                 ):
+        # num_outputs = 9
+        TorchModelV2.__init__(
+            self,
+            obs_space,
+            action_space,
+            num_outputs,
+            model_config,
+            name,
+        )
+        torch.nn.Module.__init__(self)
+
+        model_config = {
+            "conv_filters": [[6, [3, 3], 1]],
+            "conv_activation": "relu",
+            "no_final_linear": True,
+            # "post_fcnet_hiddens" : [32, 1014]
+        }
+
+        in_channels = 3
+        self.conv = nn.Conv2d(
+            in_channels=in_channels,
+            out_channels=6,
+            kernel_size=[3, 3],
+            stride=1,
+            padding='valid',
+        )
+
+        self.base_model = VisionNetwork(
+            Box(0, 255, (15, 15, 3), np.uint8),
+            action_space,
+            num_outputs,
+            model_config,
+            "yo_dawg"
+        )
+        # Initialize two FCN layers here
+        self.fc1 = nn.Linear(in_features=1014, out_features=32)
+        self.fc2 = nn.Linear(in_features=32, out_features=9)
+
+
+
+    def forward(self,
+                input_dict: Dict[str, TensorType],
+                state: List[TensorType],
+                seq_lens: TensorType,
+                ) -> (TensorType, List[TensorType]):
+        # New logic
+        # Feed through CNN here
+        # I just needed to permute the input first
+        features = input_dict["obs"]["curr_obs"].permute(0, 3, 1, 2)
+        print("features shape", features.shape)
+        features = self.conv(features)
+
+        # print shape
+        # print("shape of x right now: ", x)
+        print("here is the shape of features after being put through the cnn", features.shape)
+
+        # flatten
+        features = torch.flatten(features, start_dim=1)
+        print("flattened shape ", features.shape)
+
+        # feed through linear layers
+        features = F.relu(self.fc1(features))
+        features = F.relu(self.fc2(features))
+
+        print("linear layer features shape ", features.shape)
+        # print shape and reshape if neccessary
+
+        features = torch.squeeze(features, dim=0)
+        print("squeezed features",features.shape)
+
+        return features, state
+
+    @override(TorchModelV2)
+    def value_function(self) -> TensorType:
+        outputs = self.base_model.forward()
+        return self.base_model.value_function()
+
+
+# This should be moved to a utils.py page
 def print_model_params(_model) -> None:
     _sum = sum(p.numel() for p in _model.parameters())
     print(f"total parameters {_sum}")
@@ -411,22 +500,29 @@ def print_model_params(_model) -> None:
 
 def tes_cnn():
 
-    # sample input... "curr_obs" is what is inputed through `def forward()`
-    obs_space = { "obs" : {"curr_obs": Box(0, 255, (15, 15, 3), np.uint8),
-                 "other_agent_actions":Box(0, 9, (4,), np.uint8),
-                 "prev_visible_agents":Box(0, 1, (4,), np.uint8),
-                 "visible_agents":Box(0, 1, (4,), np.uint8)}}
+    # sample inputs...
+    obs_space = {"obs":
+                    {
+                        "curr_obs": Box(0, 255, (15, 15, 3), np.uint8),
+                        "other_agent_actions": Box(0, 9, (4,), np.uint8),
+                        "prev_visible_agents": Box(0, 1, (4,), np.uint8),
+                        "visible_agents": Box(0, 1, (4,), np.uint8)
+                    }
+                 }
+    obs_space["obs"]["curr_obs"] = torch.zeros(1, 15, 15, 3)
+
     # This is also generally equal to the number of outputs I think
     act_space = Discrete(9)
 
-    # x = CustomCNNBasic(obs_space=obs_space, action_space=act_space, num_outputs=9, model_config={}, name="yo")
-    x = CustomCNN_visionnet(obs_space=obs_space, action_space=act_space, num_outputs=9, model_config={}, name="yo")
+    # x = CustomCNN_visionnet(obs_space=obs_space, action_space=act_space, num_outputs=9, model_config={}, name="yo")
+    x = CustomCNN_visionnet_hardcoded(obs_space=obs_space, action_space=act_space, num_outputs=9, model_config={}, name="yo")
 
-    print_model_params(x)
+    test_output = x(obs_space)
 
-
+    print("output shape (needs to be [9])", len(test_output))
+    print("the above is len, this is shape ", test_output[0].shape)
+    # assert len(test_output[0])==9, "assuming num_outputs is 9... this might be wrong"
 
 
 if __name__ == '__main__':
-
     tes_cnn()
